@@ -20,11 +20,12 @@ export function ImageUploader({
   folder,
   images,
   onChange,
-  maxImages = 5,
+  maxImages = 7,
 }: ImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [removing, setRemoving] = useState<string | null>(null);
 
   async function handleFiles(files: FileList) {
     const toUpload = Array.from(files).slice(0, maxImages - images.length);
@@ -72,8 +73,27 @@ export function ImageUploader({
     }
   }
 
-  function handleRemove(url: string) {
-    onChange(images.filter((img) => img !== url));
+  async function handleRemove(url: string) {
+    const marker = "/storage/v1/object/public/images/";
+    const storagePath = url.split(marker)[1];
+    if (!storagePath) {
+      setError("No se pudo extraer la ruta de la imagen.");
+      return;
+    }
+
+    setRemoving(url);
+
+    try {
+      const supabase = createClient();
+      const { error: deleteError } = await supabase.storage.from("images").remove([storagePath]);
+      if (deleteError) throw deleteError;
+      onChange(images.filter((img) => img !== url));
+    } catch (err) {
+      setError("Error al eliminar la imagen. Intentá de nuevo.");
+      console.error(err);
+    } finally {
+      setRemoving(null);
+    }
   }
 
   const canAdd = images.length < maxImages && !uploading;
@@ -87,7 +107,8 @@ export function ImageUploader({
             <button
               type="button"
               onClick={() => handleRemove(url)}
-              className="absolute top-0.5 right-0.5 bg-black/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+              disabled={uploading || removing === url}
+              className="absolute top-0.5 right-0.5 bg-black/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <X className="h-3 w-3" />
             </button>

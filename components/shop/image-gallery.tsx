@@ -27,7 +27,7 @@ export function ImageGallery({ images, name }: ImageGalleryProps) {
           alt={name}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover"
+          className="object-contain"
           priority
         />
       </div>
@@ -39,7 +39,7 @@ export function ImageGallery({ images, name }: ImageGalleryProps) {
               key={i}
               type="button"
               onClick={() => setSelected(i)}
-              className={`relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-colors ${
+              className={`relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-colors bg-brand-cream ${
                 i === selected
                   ? "border-brand-terracotta"
                   : "border-transparent hover:border-brand-sand"
@@ -50,7 +50,7 @@ export function ImageGallery({ images, name }: ImageGalleryProps) {
                 alt={`${name} ${i + 1}`}
                 fill
                 sizes="64px"
-                className="object-cover"
+                className="object-contain"
               />
             </button>
           ))}
