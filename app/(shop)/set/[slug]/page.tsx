@@ -37,7 +37,8 @@ export default async function SetPage({ params }: Props) {
       category:categories(id, name, slug),
       set_items(
         id, quantity,
-        product:products(id, name, slug, price, images, is_active)
+        product:products(id, name, slug, price, images, is_active),
+        variation:product_variations(id, label, images)
       )
     `)
     .eq("slug", slug)
@@ -86,21 +87,26 @@ export default async function SetPage({ params }: Props) {
             </h2>
             {activeItems.length > 0 ? (
               <ul className="space-y-2">
-                {activeItems.map((si: { id: string; quantity: number; product?: { name: string; slug: string } | null }) => (
+                {activeItems.map((si: { id: string; quantity: number; product?: { name: string; slug: string } | null; variation?: { label: string } | null }) => (
                   <li key={si.id} className="flex items-center gap-3 text-sm text-brand-warm-gray">
                     <span className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-cream text-brand-charcoal font-bold text-xs flex items-center justify-center">
                       {si.quantity}
                     </span>
-                    {si.product ? (
-                      <Link
-                        href={`/producto/${si.product.slug}`}
-                        className="hover:text-brand-charcoal transition-colors"
-                      >
-                        {si.product.name}
-                      </Link>
-                    ) : (
-                      <span>Producto</span>
-                    )}
+                    <div>
+                      {si.product ? (
+                        <Link
+                          href={`/producto/${si.product.slug}`}
+                          className="hover:text-brand-charcoal transition-colors block"
+                        >
+                          {si.product.name}
+                        </Link>
+                      ) : (
+                        <span>Producto</span>
+                      )}
+                      {si.variation && (
+                        <span className="text-xs text-brand-warm-gray opacity-70">{si.variation.label}</span>
+                      )}
+                    </div>
                   </li>
                 ))}
               </ul>

@@ -12,7 +12,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
     .select(`
       *,
       category:categories(id, name, slug),
-      set_items(id, quantity, product:products(id, name, slug, price, images, is_active))
+      set_items(id, quantity, variation_id, product:products(id, name, slug, price, images, is_active), variation:product_variations(id, label, images))
     `)
     .eq("id", id)
     .single();
@@ -63,10 +63,11 @@ export async function PUT(req: NextRequest, { params }: Params) {
   await supabase.from("set_items").delete().eq("set_id", id);
 
   if (items && items.length > 0) {
-    const setItems = items.map((item: { product_id: string; quantity: number }) => ({
+    const setItems = items.map((item: { product_id: string; quantity: number; variation_id?: string | null }) => ({
       set_id: id,
       product_id: item.product_id,
       quantity: item.quantity,
+      variation_id: item.variation_id ?? null,
     }));
     const { error: itemsError } = await supabase.from("set_items").insert(setItems);
     if (itemsError) return NextResponse.json({ error: itemsError.message }, { status: 500 });
@@ -77,7 +78,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
     .select(`
       *,
       category:categories(id, name, slug),
-      set_items(id, quantity, product:products(id, name, slug, price, images, is_active))
+      set_items(id, quantity, variation_id, product:products(id, name, slug, price, images, is_active), variation:product_variations(id, label, images))
     `)
     .eq("id", id)
     .single();

@@ -2,15 +2,19 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Minus, Plus, X, Search } from "lucide-react";
+import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { Product } from "@/types";
+import type { Product, ProductVariation } from "@/types";
 
 export interface SelectedItem {
   product_id: string;
   quantity: number;
   product: Product;
+  variation_id?: string | null;
+  variation?: ProductVariation | null;
+  variations?: ProductVariation[]; // active variations available for this product
 }
 
 interface ProductSelectorProps {
@@ -23,6 +27,7 @@ export function ProductSelector({ selected, onChange }: ProductSelectorProps) {
   const [results, setResults] = useState<Product[]>([]);
   const [searching, setSearching] = useState(false);
   const [open, setOpen] = useState(false);
+  const [pendingVariationPick, setPendingVariationPick] = useState<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -56,15 +61,40 @@ export function ProductSelector({ selected, onChange }: ProductSelectorProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  function addProduct(product: Product) {
+  async function addProduct(product: Product) {
     if (selected.some((s) => s.product_id === product.id)) return;
-    onChange([...selected, { product_id: product.id, quantity: 1, product }]);
     setQuery("");
     setOpen(false);
+
+    // Fetch active variations for this product
+    let variations: ProductVariation[] = [];
+    try {
+      const res = await fetch(`/api/products/${product.id}/variations`);
+      const json = await res.json();
+      variations = (json.data as ProductVariation[]).filter(v => v.is_active);
+    } catch {
+      // Ignore — product has no variations
+    }
+
+    const newItem: SelectedItem = {
+      product_id: product.id,
+      quantity: 1,
+      product,
+      variation_id: null,
+      variation: null,
+      variations,
+    };
+
+    onChange([...selected, newItem]);
+
+    if (variations.length > 0) {
+      setPendingVariationPick(product.id);
+    }
   }
 
   function removeProduct(productId: string) {
     onChange(selected.filter((s) => s.product_id !== productId));
+    if (pendingVariationPick === productId) setPendingVariationPick(null);
   }
 
   function updateQuantity(productId: string, delta: number) {
@@ -77,6 +107,17 @@ export function ProductSelector({ selected, onChange }: ProductSelectorProps) {
     );
   }
 
+  function pickVariation(productId: string, variation: ProductVariation) {
+    onChange(
+      selected.map((s) =>
+        s.product_id === productId
+          ? { ...s, variation_id: variation.id, variation }
+          : s
+      )
+    );
+    setPendingVariationPick(null);
+  }
+
   const selectedIds = new Set(selected.map((s) => s.product_id));
 
   return (
@@ -84,31 +125,76 @@ export function ProductSelector({ selected, onChange }: ProductSelectorProps) {
       {/* Selected products */}
       {selected.length > 0 && (
         <ul className="space-y-2">
-          {selected.map(({ product, quantity, product_id }) => (
-            <li key={product_id} className="flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2">
-              <div className="flex-1 min-w-0">
-                <span className="text-sm font-medium truncate block">{product.name}</span>
-                {!product.is_active && (
-                  <Badge variant="outline" className="text-xs text-yellow-600 border-yellow-300">Inactivo</Badge>
+          {selected.map((item) => {
+            const { product, quantity, product_id, variation, variations = [] } = item;
+            const isPending = pendingVariationPick === product_id;
+
+            return (
+              <li key={product_id} className="border border-gray-200 rounded-lg overflow-hidden">
+                <div className="flex items-center gap-2 px-3 py-2">
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm font-medium truncate block">{product.name}</span>
+                    {!product.is_active && (
+                      <Badge variant="outline" className="text-xs text-yellow-600 border-yellow-300">Inactivo</Badge>
+                    )}
+                    {variation && (
+                      <span className="text-xs text-brand-warm-gray">Variación: {variation.label}</span>
+                    )}
+                    {!variation && variations.length > 0 && !isPending && (
+                      <button
+                        type="button"
+                        className="text-xs text-blue-600 hover:underline"
+                        onClick={() => setPendingVariationPick(product_id)}
+                      >
+                        Elegir variación
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Button type="button" variant="ghost" size="icon" className="h-7 w-7"
+                      onClick={() => updateQuantity(product_id, -1)}>
+                      <Minus className="h-3 w-3" />
+                    </Button>
+                    <span className="w-6 text-center text-sm font-medium">{quantity}</span>
+                    <Button type="button" variant="ghost" size="icon" className="h-7 w-7"
+                      onClick={() => updateQuantity(product_id, 1)}>
+                      <Plus className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-gray-400"
+                    onClick={() => removeProduct(product_id)}>
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+
+                {/* Variation picker — shown when product has variations and none selected */}
+                {isPending && variations.length > 0 && (
+                  <div className="border-t border-gray-100 bg-gray-50 px-3 py-2 space-y-2">
+                    <p className="text-xs text-gray-500 font-medium">Elegí una variación:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {variations.map((v) => (
+                        <button
+                          key={v.id}
+                          type="button"
+                          onClick={() => pickVariation(product_id, v)}
+                          className="flex flex-col items-center gap-1 p-1 rounded-md border-2 border-transparent hover:border-brand-terracotta transition-colors"
+                        >
+                          <div className="relative w-12 h-12 rounded bg-brand-cream overflow-hidden">
+                            {v.images[0] ? (
+                              <Image src={v.images[0]} alt={v.label} fill className="object-contain" sizes="48px" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs">?</div>
+                            )}
+                          </div>
+                          <span className="text-xs text-brand-charcoal">{v.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 )}
-              </div>
-              <div className="flex items-center gap-1">
-                <Button type="button" variant="ghost" size="icon" className="h-7 w-7"
-                  onClick={() => updateQuantity(product_id, -1)}>
-                  <Minus className="h-3 w-3" />
-                </Button>
-                <span className="w-6 text-center text-sm font-medium">{quantity}</span>
-                <Button type="button" variant="ghost" size="icon" className="h-7 w-7"
-                  onClick={() => updateQuantity(product_id, 1)}>
-                  <Plus className="h-3 w-3" />
-                </Button>
-              </div>
-              <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-gray-400"
-                onClick={() => removeProduct(product_id)}>
-                <X className="h-3 w-3" />
-              </Button>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
       )}
 

@@ -1,3 +1,13 @@
+export interface ProductVariation {
+  id: string;
+  product_id: string;
+  label: string;
+  images: string[];
+  is_active: boolean;
+  sort_order: number;
+  created_at: string;
+}
+
 export interface Category {
   id: string;
   name: string;
@@ -18,6 +28,7 @@ export interface Product {
   is_active: boolean;
   featured: boolean;
   created_at: string;
+  variations?: ProductVariation[];
 }
 
 export interface SetItem {
@@ -26,6 +37,8 @@ export interface SetItem {
   product_id: string;
   product?: Product;
   quantity: number;
+  variation_id?: string | null;
+  variation?: ProductVariation | null;
 }
 
 export interface Collection {

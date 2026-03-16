@@ -82,6 +82,8 @@ export function SetFormDialog({
             product_id: si.product_id,
             quantity: si.quantity,
             product: si.product!,
+            variation_id: si.variation_id ?? null,
+            variation: si.variation ?? null,
           }))
         );
         setManualSlug(true);
@@ -115,7 +117,7 @@ export function SetFormDialog({
         body: JSON.stringify({
           ...values,
           images,
-          items: items.map((i) => ({ product_id: i.product_id, quantity: i.quantity })),
+          items: items.map((i) => ({ product_id: i.product_id, quantity: i.quantity, variation_id: i.variation_id ?? null })),
         }),
       });
       const json = await res.json();

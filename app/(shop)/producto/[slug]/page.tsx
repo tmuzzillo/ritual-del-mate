@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { ImageGallery } from "@/components/shop/image-gallery";
+import { ProductDetailClient } from "@/components/shop/product-detail-client";
+import type { ProductVariation } from "@/types";
 import type { Metadata } from "next";
 
 interface Props {
@@ -32,12 +33,16 @@ export default async function ProductoPage({ params }: Props) {
 
   const { data: product } = await supabase
     .from("products")
-    .select("*, category:categories(id, name, slug)")
+    .select("*, category:categories(id, name, slug), variations:product_variations(id, label, images, is_active, sort_order)")
     .eq("slug", slug)
     .eq("is_active", true)
     .single();
 
   if (!product) notFound();
+
+  const activeVariations = ((product.variations ?? []) as ProductVariation[])
+    .filter((v) => v.is_active)
+    .sort((a, b) => a.sort_order - b.sort_order);
 
   const formatted =
     product.price != null
@@ -58,7 +63,11 @@ export default async function ProductoPage({ params }: Props) {
       </Link>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
-        <ImageGallery images={product.images} name={product.name} />
+        <ProductDetailClient
+          images={product.images}
+          name={product.name}
+          variations={activeVariations}
+        />
 
         <div className="flex flex-col gap-4">
           {product.category && (

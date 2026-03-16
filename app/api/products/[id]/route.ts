@@ -3,13 +3,18 @@ import { NextRequest, NextResponse } from "next/server";
 
 type Params = { params: Promise<{ id: string }> };
 
-export async function GET(_req: NextRequest, { params }: Params) {
+export async function GET(req: NextRequest, { params }: Params) {
   const supabase = await createClient();
   const { id } = await params;
+  const includeVariations = req.nextUrl.searchParams.get("include") === "variations";
+
+  const select = includeVariations
+    ? "*, category:categories(id, name, slug), variations:product_variations(id, label, images, is_active, sort_order)"
+    : "*, category:categories(id, name, slug)";
 
   const { data, error } = await supabase
     .from("products")
-    .select("*, category:categories(id, name, slug)")
+    .select(select)
     .eq("id", id)
     .single();
 
