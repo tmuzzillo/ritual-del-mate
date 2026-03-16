@@ -1,13 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ProductTable } from "@/components/admin/products/product-table";
+import { ProductTable, type SortState } from "@/components/admin/products/product-table";
+import { ProductFilters, type FilterState } from "@/components/admin/products/product-filters";
+import { BatchActionBar } from "@/components/admin/products/batch-action-bar";
 import { ProductFormDialog } from "@/components/admin/products/product-form-dialog";
 import { DeleteProductConfirmDialog } from "@/components/admin/products/delete-product-confirm-dialog";
 import type { Product, Category } from "@/types";
+
+const DEFAULT_FILTERS: FilterState = { search: "", categoryId: null, status: "all" };
+const DEFAULT_SORT: SortState = { field: null, dir: "asc" };
 
 export default function ProductosPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -16,6 +21,9 @@ export default function ProductosPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Product | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
+  const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
+  const [sort, setSort] = useState<SortState>(DEFAULT_SORT);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -38,6 +46,30 @@ export default function ProductosPage() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
+  const filteredProducts = useMemo(() => {
+    const q = filters.search.toLowerCase();
+    return products
+      .filter((p) => {
+        if (q && !p.name.toLowerCase().includes(q)) return false;
+        if (filters.categoryId && p.category?.id !== filters.categoryId) return false;
+        if (filters.status === "active" && !p.is_active) return false;
+        if (filters.status === "inactive" && p.is_active) return false;
+        return true;
+      })
+      .sort((a, b) => {
+        if (!sort.field) return 0;
+        const mul = sort.dir === "asc" ? 1 : -1;
+        switch (sort.field) {
+          case "name": return mul * a.name.localeCompare(b.name, "es");
+          case "price": return mul * ((a.price ?? -1) - (b.price ?? -1));
+          case "category":
+            return mul * (a.category?.name ?? "").localeCompare(b.category?.name ?? "", "es");
+          case "status": return mul * (Number(a.is_active) - Number(b.is_active));
+          default: return 0;
+        }
+      });
+  }, [products, filters, sort]);
+
   function handleEdit(product: Product) {
     setEditTarget(product);
     setFormOpen(true);
@@ -53,6 +85,11 @@ export default function ProductosPage() {
     if (!open) setEditTarget(null);
   }
 
+  function handleSuccess() {
+    setSelectedIds(new Set());
+    fetchData();
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -64,13 +101,32 @@ export default function ProductosPage() {
       </div>
 
       <div className="bg-white rounded-lg border border-gray-200">
+        <ProductFilters
+          categories={categories}
+          filters={filters}
+          onFiltersChange={setFilters}
+          totalCount={products.length}
+          filteredCount={filteredProducts.length}
+        />
         <ProductTable
-          products={products}
+          products={filteredProducts}
           loading={loading}
+          selectedIds={selectedIds}
+          sort={sort}
           onEdit={handleEdit}
           onDelete={setDeleteTarget}
+          onSelectionChange={setSelectedIds}
+          onSortChange={setSort}
         />
       </div>
+
+      <BatchActionBar
+        selectedIds={selectedIds}
+        products={products}
+        categories={categories}
+        onClearSelection={() => setSelectedIds(new Set())}
+        onSuccess={handleSuccess}
+      />
 
       <ProductFormDialog
         product={editTarget}
