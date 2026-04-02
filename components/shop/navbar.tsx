@@ -23,18 +23,18 @@ export function Navbar() {
             alt="Ritual del Mate"
             width={56}
             height={56}
-            className="h-14 w-14 object-contain"
+            className="h-14 w-14 object-contain mix-blend-multiply"
             priority
           />
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden sm:flex items-center gap-8">
+        <nav className="hidden sm:flex items-center gap-10">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-semibold text-brand-dark hover:text-brand-orange transition-colors"
+              className="text-base font-bold text-brand-dark hover:text-brand-orange transition-colors tracking-wide"
             >
               {link.label}
             </Link>
@@ -47,18 +47,18 @@ export function Navbar() {
           onClick={() => setMenuOpen((v) => !v)}
           aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
         >
-          {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          {menuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
 
       {/* Mobile nav */}
       {menuOpen && (
-        <nav className="sm:hidden border-t border-brand-sand bg-brand-cream px-4 py-4 flex flex-col gap-4">
+        <nav className="sm:hidden border-t border-brand-sand bg-brand-cream px-6 py-5 flex flex-col gap-5">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-semibold text-brand-dark hover:text-brand-orange transition-colors py-1"
+              className="text-lg font-bold text-brand-dark hover:text-brand-orange transition-colors"
               onClick={() => setMenuOpen(false)}
             >
               {link.label}

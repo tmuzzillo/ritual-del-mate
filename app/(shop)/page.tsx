@@ -45,7 +45,7 @@ export default async function HomePage() {
             alt="Ritual del Mate"
             width={200}
             height={200}
-            className="mx-auto object-contain mb-8"
+            className="mx-auto object-contain mb-8 mix-blend-multiply"
             priority
           />
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-brand-dark leading-tight tracking-tight max-w-2xl">
@@ -157,19 +157,9 @@ export default async function HomePage() {
       <section className="bg-brand-dark text-brand-cream">
         <div className="max-w-3xl mx-auto px-6 py-24 text-center">
           <AnimatedSection>
-            <Image
-              src="/logo-blob.jpg"
-              alt="Ritual del Mate"
-              width={80}
-              height={80}
-              className="mx-auto mb-8 opacity-90 object-contain"
-            />
-            <h2 className="text-2xl sm:text-3xl font-bold mb-6 leading-snug">
+<h2 className="text-2xl sm:text-3xl font-bold mb-6 leading-snug">
               Sobre Ritual del Mate
             </h2>
-            <p className="text-brand-cream/70 leading-relaxed mb-10 text-base sm:text-lg">
-              Somos un emprendimiento de Villa María, Córdoba, Argentina, dedicado a accesorios de mate artesanales hechos con amor. Cada pieza es elegida y diseñada para quienes hacen del mate algo propio.
-            </p>
             <blockquote className="border-l-2 border-brand-orange pl-6 text-left max-w-xl mx-auto">
               <p className="text-brand-cream/90 italic text-base sm:text-lg leading-relaxed">
                 "Gracias por elegir Ritual del Mate. Cada pieza fue elegida con intención para quienes valoran la belleza en los detalles y transforman lo cotidiano en ritual. Que esto que hoy llega a tus manos sea tu pausa, tu calma y ese momento que volvés a vos."
