@@ -14,7 +14,7 @@ export function ImageGallery({ images, name }: ImageGalleryProps) {
   if (images.length === 0) {
     return (
       <div className="aspect-square bg-brand-cream rounded-2xl flex items-center justify-center">
-        <span className="text-brand-warm-gray text-sm">Sin imágenes</span>
+        <span className="text-brand-brown text-sm">Sin imágenes</span>
       </div>
     );
   }
@@ -41,7 +41,7 @@ export function ImageGallery({ images, name }: ImageGalleryProps) {
               onClick={() => setSelected(i)}
               className={`relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden border-2 transition-colors bg-brand-cream ${
                 i === selected
-                  ? "border-brand-terracotta"
+                  ? "border-brand-orange"
                   : "border-transparent hover:border-brand-sand"
               }`}
             >

@@ -36,16 +36,16 @@ export function ProductCard({ product }: ProductCardProps) {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <span className="text-brand-warm-gray text-xs">Sin imagen</span>
+            <span className="text-brand-brown text-xs">Sin imagen</span>
           </div>
         )}
       </div>
 
       <div className="p-4 flex flex-col gap-1">
-        <h3 className="font-semibold text-brand-charcoal text-sm leading-snug line-clamp-2">
+        <h3 className="font-semibold text-brand-dark text-sm leading-snug line-clamp-2">
           {product.name}
         </h3>
-        <p className="text-brand-terracotta font-bold text-sm mt-1">
+        <p className="text-brand-orange font-bold text-sm mt-1">
           {formatPrice(product.price)}
         </p>
       </div>

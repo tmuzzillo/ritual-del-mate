@@ -15,7 +15,7 @@ export function VariationSelector({ variations, selectedId, onSelect }: Variatio
 
   return (
     <div className="space-y-2">
-      <p className="text-sm font-medium text-brand-charcoal">Variaciones</p>
+      <p className="text-sm font-medium text-brand-dark">Variaciones</p>
       <div className="flex flex-wrap gap-3">
         {active.map((v) => {
           const isSelected = v.id === selectedId;
@@ -26,7 +26,7 @@ export function VariationSelector({ variations, selectedId, onSelect }: Variatio
               onClick={() => onSelect(isSelected ? null : v.id)}
               className={`flex flex-col items-center gap-1 p-1 rounded-lg border-2 transition-colors ${
                 isSelected
-                  ? "border-brand-terracotta"
+                  ? "border-brand-orange"
                   : "border-transparent hover:border-brand-sand"
               }`}
             >
@@ -41,11 +41,11 @@ export function VariationSelector({ variations, selectedId, onSelect }: Variatio
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
-                    <span className="text-brand-warm-gray text-xs">?</span>
+                    <span className="text-brand-brown text-xs">?</span>
                   </div>
                 )}
               </div>
-              <span className="text-xs text-brand-charcoal text-center max-w-[64px] leading-tight">
+              <span className="text-xs text-brand-dark text-center max-w-[64px] leading-tight">
                 {v.label}
               </span>
             </button>

@@ -459,7 +459,7 @@ export function ProductFormDialog({
                                   {v.label}
                                 </span>
                                 {v.is_default && (
-                                  <Star className="h-4 w-4 fill-brand-terracotta text-brand-terracotta flex-shrink-0" />
+                                  <Star className="h-4 w-4 fill-brand-orange text-brand-orange flex-shrink-0" />
                                 )}
                               </div>
                             </div>

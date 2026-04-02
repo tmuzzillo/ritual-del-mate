@@ -17,18 +17,15 @@ export function Navbar() {
   return (
     <header className="bg-brand-cream border-b border-brand-sand sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+        <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
           <Image
-            src="/logo.jpg"
-            alt=""
-            width={120}
-            height={48}
-            className="h-10 w-auto object-contain"
+            src="/logo-blob.jpg"
+            alt="Ritual del Mate"
+            width={56}
+            height={56}
+            className="h-14 w-14 object-contain"
             priority
           />
-          <span className="font-extrabold text-lg text-brand-charcoal tracking-tight leading-tight">
-            Ritual del Mate
-          </span>
         </Link>
 
         {/* Desktop nav */}
@@ -37,7 +34,7 @@ export function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-semibold text-brand-charcoal hover:text-brand-terracotta transition-colors"
+              className="text-sm font-semibold text-brand-dark hover:text-brand-orange transition-colors"
             >
               {link.label}
             </Link>
@@ -46,7 +43,7 @@ export function Navbar() {
 
         {/* Mobile hamburger */}
         <button
-          className="sm:hidden text-brand-charcoal p-1"
+          className="sm:hidden text-brand-dark p-1"
           onClick={() => setMenuOpen((v) => !v)}
           aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
         >
@@ -61,7 +58,7 @@ export function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-semibold text-brand-charcoal hover:text-brand-terracotta transition-colors py-1"
+              className="text-sm font-semibold text-brand-dark hover:text-brand-orange transition-colors py-1"
               onClick={() => setMenuOpen(false)}
             >
               {link.label}

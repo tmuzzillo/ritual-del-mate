@@ -138,7 +138,7 @@ export function ProductSelector({ selected, onChange }: ProductSelectorProps) {
                       <Badge variant="outline" className="text-xs text-yellow-600 border-yellow-300">Inactivo</Badge>
                     )}
                     {variation && (
-                      <span className="text-xs text-brand-warm-gray">Variación: {variation.label}</span>
+                      <span className="text-xs text-brand-brown">Variación: {variation.label}</span>
                     )}
                     {!variation && variations.length > 0 && !isPending && (
                       <button
@@ -177,7 +177,7 @@ export function ProductSelector({ selected, onChange }: ProductSelectorProps) {
                           key={v.id}
                           type="button"
                           onClick={() => pickVariation(product_id, v)}
-                          className="flex flex-col items-center gap-1 p-1 rounded-md border-2 border-transparent hover:border-brand-terracotta transition-colors"
+                          className="flex flex-col items-center gap-1 p-1 rounded-md border-2 border-transparent hover:border-brand-orange transition-colors"
                         >
                           <div className="relative w-12 h-12 rounded bg-brand-cream overflow-hidden">
                             {v.images[0] ? (
@@ -186,7 +186,7 @@ export function ProductSelector({ selected, onChange }: ProductSelectorProps) {
                               <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs">?</div>
                             )}
                           </div>
-                          <span className="text-xs text-brand-charcoal">{v.label}</span>
+                          <span className="text-xs text-brand-dark">{v.label}</span>
                         </button>
                       ))}
                     </div>

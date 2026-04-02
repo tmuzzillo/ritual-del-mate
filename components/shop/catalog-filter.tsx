@@ -25,8 +25,8 @@ export function CatalogFilter({ products, categories }: CatalogFilterProps) {
             onClick={() => setSelected(null)}
             className={`px-4 py-1.5 rounded-full text-sm font-semibold border transition-colors ${
               selected === null
-                ? "bg-brand-charcoal text-white border-brand-charcoal"
-                : "text-brand-charcoal border-brand-sand hover:border-brand-charcoal"
+                ? "bg-brand-dark text-white border-brand-dark"
+                : "text-brand-dark border-brand-sand hover:border-brand-dark"
             }`}
           >
             Todos
@@ -37,8 +37,8 @@ export function CatalogFilter({ products, categories }: CatalogFilterProps) {
               onClick={() => setSelected(cat.slug)}
               className={`px-4 py-1.5 rounded-full text-sm font-semibold border transition-colors ${
                 selected === cat.slug
-                  ? "bg-brand-charcoal text-white border-brand-charcoal"
-                  : "text-brand-charcoal border-brand-sand hover:border-brand-charcoal"
+                  ? "bg-brand-dark text-white border-brand-dark"
+                  : "text-brand-dark border-brand-sand hover:border-brand-dark"
               }`}
             >
               {cat.name}
@@ -56,10 +56,10 @@ export function CatalogFilter({ products, categories }: CatalogFilterProps) {
         </div>
       ) : (
         <div className="py-20 text-center flex flex-col items-center gap-4">
-          <p className="text-brand-warm-gray text-lg">No hay productos en esta categoría.</p>
+          <p className="text-brand-brown text-lg">No hay productos en esta categoría.</p>
           <button
             onClick={() => setSelected(null)}
-            className="text-brand-terracotta font-semibold hover:text-brand-terracotta-hover transition-colors"
+            className="text-brand-orange font-semibold hover:text-brand-orange-hover transition-colors"
           >
             Ver todos los productos →
           </button>

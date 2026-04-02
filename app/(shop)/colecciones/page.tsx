@@ -16,7 +16,7 @@ export default async function ColeccionesPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-      <h1 className="text-3xl font-extrabold text-brand-charcoal mb-8">Colecciones</h1>
+      <h1 className="text-3xl font-extrabold text-brand-dark mb-8">Colecciones</h1>
 
       {collections.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -35,7 +35,7 @@ export default async function ColeccionesPage() {
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-brand-charcoal/70 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/70 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-5">
                 <h2 className="font-extrabold text-white text-lg leading-tight">{col.name}</h2>
                 {col.description && (
@@ -47,7 +47,7 @@ export default async function ColeccionesPage() {
         </div>
       ) : (
         <div className="py-20 text-center">
-          <p className="text-brand-warm-gray text-lg">No hay colecciones disponibles por el momento.</p>
+          <p className="text-brand-brown text-lg">No hay colecciones disponibles por el momento.</p>
         </div>
       )}
     </div>

@@ -1,164 +1,184 @@
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { ProductCard } from "@/components/shop/product-card";
-import { SetCard } from "@/components/shop/set-card";
-import type { Product, MateSet, Collection } from "@/types";
+import { AnimatedSection } from "@/components/shop/animated-section";
+import { CollectionCardHome } from "@/components/shop/collection-card-home";
+import { SetsCarousel } from "@/components/shop/sets-carousel";
+import { HeroAnimations } from "@/components/shop/hero-animations";
 
 export default async function HomePage() {
   const supabase = await createClient();
 
-  const [
-    { data: featuredProducts },
-    { data: featuredSets },
-    { data: collections },
-  ] = await Promise.all([
-    supabase
-      .from("products")
-      .select("*, category:categories(id, name, slug)")
-      .eq("is_active", true)
-      .eq("featured", true)
-      .order("created_at", { ascending: false })
-      .limit(6),
-    supabase
-      .from("sets")
-      .select("*, category:categories(id, name, slug), set_items(id, quantity, product:products(id, name, slug, price, images, is_active))")
-      .eq("is_active", true)
-      .eq("featured", true)
-      .order("created_at", { ascending: false })
-      .limit(4),
+  const [collectionsRes, setsRes, productsRes] = await Promise.all([
     supabase
       .from("collections")
-      .select("*")
+      .select("id, name, slug, description, tagline, images, is_active, created_at")
       .eq("is_active", true)
-      .order("created_at", { ascending: false }),
+      .order("name"),
+    supabase
+      .from("sets")
+      .select("id, name, slug, price, images, description, category_id, is_active, featured, created_at")
+      .eq("is_active", true)
+      .eq("featured", true)
+      .limit(6),
+    supabase
+      .from("products")
+      .select("id, name, slug, price, description, images, is_active, featured, created_at, stock, category_id, variations:product_variations(id, product_id, label, images, is_default, is_active, sort_order, created_at)")
+      .eq("is_active", true)
+      .eq("featured", true)
+      .limit(4),
   ]);
 
-  const products = (featuredProducts ?? []) as Product[];
-  const sets = (featuredSets ?? []) as MateSet[];
-  const activeCollections = (collections ?? []) as Collection[];
+  const collections = collectionsRes.data ?? [];
+  const sets = setsRes.data ?? [];
+  const products = productsRes.data ?? [];
 
   return (
-    <div>
-      {/* Hero */}
-      <section className="bg-brand-cream">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-20 sm:py-32 flex flex-col items-center text-center gap-6">
-          <h1 className="text-4xl sm:text-6xl font-extrabold text-brand-charcoal tracking-tight leading-tight">
-            Ritual del Mate
+    <div className="bg-brand-cream min-h-screen">
+
+      {/* ── 1. HERO ─────────────────────────────────────────── */}
+      <section className="relative flex flex-col items-center justify-center min-h-[85vh] px-6 text-center overflow-hidden">
+        <HeroAnimations>
+          <Image
+            src="/logo-blob.jpg"
+            alt="Ritual del Mate"
+            width={200}
+            height={200}
+            className="mx-auto object-contain mb-8"
+            priority
+          />
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-brand-dark leading-tight tracking-tight max-w-2xl">
+            Rituales que hablan de vos
           </h1>
-          <p className="text-brand-warm-gray text-base sm:text-lg max-w-xl leading-relaxed">
-            Mates y accesorios seleccionados con intención.
-            <br className="hidden sm:block" />
-            Transforma tu momento matero en ritual.
+          <p className="mt-4 text-base sm:text-lg text-brand-brown max-w-md mx-auto leading-relaxed">
+            Tu momento matero de cada día merece ser elegido con intención.
           </p>
-          <Link
-            href="/catalogo"
-            className="mt-2 inline-flex items-center justify-center rounded-full bg-brand-terracotta text-white font-semibold px-8 py-3 text-sm hover:bg-brand-terracotta-hover transition-colors"
+          <a
+            href="#colecciones"
+            className="mt-10 inline-flex items-center gap-2 bg-brand-orange text-white font-semibold px-8 py-3 rounded-full hover:bg-brand-orange-hover transition-colors text-sm"
           >
-            Ver catálogo
-          </Link>
-        </div>
+            Explorar
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </a>
+        </HeroAnimations>
       </section>
 
-      {/* Featured Products */}
-      {products.length > 0 && (
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
-          <div className="flex items-end justify-between mb-8">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-brand-charcoal">
-              Productos destacados
+      {/* ── 2. COLECCIONES ──────────────────────────────────── */}
+      {collections.length > 0 && (
+        <section id="colecciones" className="max-w-6xl mx-auto px-4 sm:px-6 py-20">
+          <AnimatedSection>
+            <p className="text-brand-orange text-xs font-semibold uppercase tracking-widest mb-2">
+              Tu ritual, tu identidad
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-brand-dark mb-12">
+              Colecciones
             </h2>
+          </AnimatedSection>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            {collections.map((collection, i) => (
+              <AnimatedSection key={collection.id} delay={i * 0.12} direction="up">
+                <CollectionCardHome collection={collection} />
+              </AnimatedSection>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ── 3. SETS ─────────────────────────────────────────── */}
+      {sets.length > 0 && (
+        <section className="py-20 bg-brand-golden/20">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 mb-8">
+            <AnimatedSection>
+              <p className="text-brand-orange text-xs font-semibold uppercase tracking-widest mb-2">
+                Armados con intención
+              </p>
+              <h2 className="text-3xl sm:text-4xl font-bold text-brand-dark">
+                Los más elegidos
+              </h2>
+            </AnimatedSection>
+          </div>
+
+          <AnimatedSection delay={0.1}>
+            <SetsCarousel sets={sets} />
+          </AnimatedSection>
+        </section>
+      )}
+
+      {/* ── 4. PRODUCTOS ────────────────────────────────────── */}
+      {products.length > 0 && (
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20">
+          <AnimatedSection className="flex items-end justify-between mb-10">
+            <div>
+              <p className="text-brand-orange text-xs font-semibold uppercase tracking-widest mb-2">
+                Piezas seleccionadas
+              </p>
+              <h2 className="text-3xl sm:text-4xl font-bold text-brand-dark">
+                También podés armar tu propio ritual
+              </h2>
+            </div>
             <Link
               href="/catalogo"
-              className="text-sm font-semibold text-brand-terracotta hover:text-brand-terracotta-hover transition-colors"
+              className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-brand-orange hover:text-brand-orange-hover transition-colors shrink-0 ml-8"
             >
-              Ver todos →
+              Ver catálogo completo
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
             </Link>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+          </AnimatedSection>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {products.map((product, i) => (
+              <AnimatedSection key={product.id} delay={i * 0.08}>
+                <ProductCard product={product} />
+              </AnimatedSection>
             ))}
           </div>
+
+          <AnimatedSection className="mt-8 sm:hidden text-center">
+            <Link
+              href="/catalogo"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-brand-orange hover:text-brand-orange-hover transition-colors"
+            >
+              Ver catálogo completo
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          </AnimatedSection>
         </section>
       )}
 
-      {/* Featured Sets */}
-      {sets.length > 0 && (
-        <section className="bg-brand-cream/40">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
-            <div className="flex items-end justify-between mb-8">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-brand-charcoal">
-                Sets seleccionados
-              </h2>
-              <Link
-                href="/sets"
-                className="text-sm font-semibold text-brand-terracotta hover:text-brand-terracotta-hover transition-colors"
-              >
-                Ver todos →
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-              {sets.map((set) => (
-                <SetCard key={set.id} set={set} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Collections */}
-      {activeCollections.length > 0 && (
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-20">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-brand-charcoal mb-8">
-            Colecciones
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {activeCollections.map((collection) => (
-              <CollectionCard key={collection.id} collection={collection} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Sobre mí */}
-      <section className="bg-brand-charcoal text-brand-cream">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-16 sm:py-24 text-center flex flex-col items-center gap-6">
-          <h2 className="text-2xl sm:text-3xl font-extrabold">Sobre mí</h2>
-          <p className="text-brand-sand leading-relaxed text-base sm:text-lg">
-            Soy un emprendimiento argentino que cree en la magia del mate compartido.
-            Cada accesorio que elijo tiene una historia, una textura, una intención.
-            Porque preparar el mate no es solo una costumbre — es un ritual.
-          </p>
-          <p className="text-brand-warm-gray text-sm">
-            Villa María, Córdoba, Argentina · Envíos a todo el país
-          </p>
+      {/* ── 5. MARCA ────────────────────────────────────────── */}
+      <section className="bg-brand-dark text-brand-cream">
+        <div className="max-w-3xl mx-auto px-6 py-24 text-center">
+          <AnimatedSection>
+            <Image
+              src="/logo-blob.jpg"
+              alt="Ritual del Mate"
+              width={80}
+              height={80}
+              className="mx-auto mb-8 opacity-90 object-contain"
+            />
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 leading-snug">
+              Sobre Ritual del Mate
+            </h2>
+            <p className="text-brand-cream/70 leading-relaxed mb-10 text-base sm:text-lg">
+              Somos un emprendimiento de Villa María, Córdoba, Argentina, dedicado a accesorios de mate artesanales hechos con amor. Cada pieza es elegida y diseñada para quienes hacen del mate algo propio.
+            </p>
+            <blockquote className="border-l-2 border-brand-orange pl-6 text-left max-w-xl mx-auto">
+              <p className="text-brand-cream/90 italic text-base sm:text-lg leading-relaxed">
+                "Gracias por elegir Ritual del Mate. Cada pieza fue elegida con intención para quienes valoran la belleza en los detalles y transforman lo cotidiano en ritual. Que esto que hoy llega a tus manos sea tu pausa, tu calma y ese momento que volvés a vos."
+              </p>
+            </blockquote>
+          </AnimatedSection>
         </div>
       </section>
-    </div>
-  );
-}
 
-function CollectionCard({ collection }: { collection: Collection }) {
-  const coverImage = collection.images[0] ?? null;
-
-  return (
-    <div className="group relative rounded-2xl overflow-hidden border border-brand-sand bg-brand-cream aspect-[4/3]">
-      {coverImage && (
-        <Image
-          src={coverImage}
-          alt={collection.name}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
-        />
-      )}
-      <div className="absolute inset-0 bg-gradient-to-t from-brand-charcoal/70 to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 p-5">
-        <h3 className="font-extrabold text-white text-lg leading-tight">{collection.name}</h3>
-        {collection.description && (
-          <p className="text-white/75 text-sm mt-1 line-clamp-2">{collection.description}</p>
-        )}
-      </div>
     </div>
   );
 }

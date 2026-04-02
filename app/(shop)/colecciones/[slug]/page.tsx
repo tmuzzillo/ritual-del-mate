@@ -79,7 +79,7 @@ export default async function ColeccionDetailPage({ params }: Props) {
             priority
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-charcoal/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/60 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 max-w-6xl mx-auto px-4 sm:px-6 pb-6">
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
             {collection.name}
@@ -95,14 +95,14 @@ export default async function ColeccionDetailPage({ params }: Props) {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <Link
           href="/colecciones"
-          className="text-sm text-brand-warm-gray hover:text-brand-charcoal transition-colors mb-8 inline-block"
+          className="text-sm text-brand-brown hover:text-brand-dark transition-colors mb-8 inline-block"
         >
           ← Volver a colecciones
         </Link>
 
         {!hasContent ? (
           <div className="py-16 text-center">
-            <p className="text-brand-warm-gray text-lg">
+            <p className="text-brand-brown text-lg">
               No hay items disponibles en esta colección por el momento.
             </p>
           </div>
@@ -110,7 +110,7 @@ export default async function ColeccionDetailPage({ params }: Props) {
           <div className="space-y-12">
             {products.length > 0 && (
               <section>
-                <h2 className="text-xl font-extrabold text-brand-charcoal mb-6">Productos</h2>
+                <h2 className="text-xl font-extrabold text-brand-dark mb-6">Productos</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                   {products.map((product) => (
                     <ProductCard key={product.id} product={product} />
@@ -121,7 +121,7 @@ export default async function ColeccionDetailPage({ params }: Props) {
 
             {sets.length > 0 && (
               <section>
-                <h2 className="text-xl font-extrabold text-brand-charcoal mb-6">Sets</h2>
+                <h2 className="text-xl font-extrabold text-brand-dark mb-6">Sets</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                   {sets.map((set) => (
                     <SetCard key={set.id} set={set} />

@@ -15,7 +15,7 @@ export default async function SetsPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-      <h1 className="text-3xl font-extrabold text-brand-charcoal mb-8">Sets seleccionados</h1>
+      <h1 className="text-3xl font-extrabold text-brand-dark mb-8">Sets seleccionados</h1>
 
       {sets.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -25,7 +25,7 @@ export default async function SetsPage() {
         </div>
       ) : (
         <div className="py-20 text-center">
-          <p className="text-brand-warm-gray text-lg">No hay sets disponibles por el momento.</p>
+          <p className="text-brand-brown text-lg">No hay sets disponibles por el momento.</p>
         </div>
       )}
     </div>

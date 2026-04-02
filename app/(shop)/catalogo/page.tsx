@@ -26,7 +26,7 @@ export default async function CatalogoPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-      <h1 className="text-3xl font-extrabold text-brand-charcoal mb-6">Catálogo</h1>
+      <h1 className="text-3xl font-extrabold text-brand-dark mb-6">Catálogo</h1>
       <CatalogFilter products={products} categories={categories} />
     </div>
   );

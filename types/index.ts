@@ -47,6 +47,7 @@ export interface Collection {
   name: string;
   slug: string;
   description: string | null;
+  tagline?: string | null;
   images: string[];
   is_active: boolean;
   created_at: string;

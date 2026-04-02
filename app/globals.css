@@ -7,7 +7,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-nunito);
+  --font-sans: var(--font-montserrat);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -47,14 +47,14 @@
   --radius-4xl: calc(var(--radius) + 16px);
 
   /* Brand tokens — Ritual del Mate */
-  --color-brand-cream: #EAE0D5;
-  --color-brand-sand: #D4C5B2;
-  --color-brand-terracotta: #C4562A;
-  --color-brand-terracotta-hover: #A83E1F;
-  --color-brand-olive: #536430;
-  --color-brand-olive-light: #7A9050;
-  --color-brand-charcoal: #1E1A12;
-  --color-brand-warm-gray: #8A7D6E;
+  --color-brand-cream:        #EFEADF;
+  --color-brand-sand:         #D4C5B2;
+  --color-brand-orange:       #BF7438;
+  --color-brand-orange-hover: #A0602A;
+  --color-brand-olive:        #7B7648;
+  --color-brand-dark:         #38331C;
+  --color-brand-brown:        #6F563B;
+  --color-brand-golden:       #D5B477;
 }
 
 :root {

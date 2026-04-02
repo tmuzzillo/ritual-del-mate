@@ -61,7 +61,7 @@ export default async function SetPage({ params }: Props) {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
       <Link
         href="/sets"
-        className="text-sm text-brand-warm-gray hover:text-brand-charcoal transition-colors mb-8 inline-block"
+        className="text-sm text-brand-brown hover:text-brand-dark transition-colors mb-8 inline-block"
       >
         ← Volver a sets
       </Link>
@@ -72,31 +72,31 @@ export default async function SetPage({ params }: Props) {
         <div className="flex flex-col gap-4">
           <span className="text-xs font-semibold text-brand-olive uppercase tracking-wide">Set</span>
 
-          <h1 className="text-3xl font-extrabold text-brand-charcoal leading-tight">{set.name}</h1>
+          <h1 className="text-3xl font-extrabold text-brand-dark leading-tight">{set.name}</h1>
 
-          <p className="text-2xl font-bold text-brand-terracotta">{formatted}</p>
+          <p className="text-2xl font-bold text-brand-orange">{formatted}</p>
 
           {set.description && (
-            <p className="text-brand-warm-gray leading-relaxed">{set.description}</p>
+            <p className="text-brand-brown leading-relaxed">{set.description}</p>
           )}
 
           {/* Products in set */}
           <div className="mt-2">
-            <h2 className="text-sm font-semibold text-brand-charcoal mb-3 uppercase tracking-wide">
+            <h2 className="text-sm font-semibold text-brand-dark mb-3 uppercase tracking-wide">
               Incluye
             </h2>
             {activeItems.length > 0 ? (
               <ul className="space-y-2">
                 {activeItems.map((si: { id: string; quantity: number; product?: { name: string; slug: string } | null; variation?: { label: string } | null }) => (
-                  <li key={si.id} className="flex items-center gap-3 text-sm text-brand-warm-gray">
-                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-cream text-brand-charcoal font-bold text-xs flex items-center justify-center">
+                  <li key={si.id} className="flex items-center gap-3 text-sm text-brand-brown">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-cream text-brand-dark font-bold text-xs flex items-center justify-center">
                       {si.quantity}
                     </span>
                     <div>
                       {si.product ? (
                         <Link
                           href={`/producto/${si.product.slug}`}
-                          className="hover:text-brand-charcoal transition-colors block"
+                          className="hover:text-brand-dark transition-colors block"
                         >
                           {si.product.name}
                         </Link>
@@ -104,24 +104,24 @@ export default async function SetPage({ params }: Props) {
                         <span>Producto</span>
                       )}
                       {si.variation && (
-                        <span className="text-xs text-brand-warm-gray opacity-70">{si.variation.label}</span>
+                        <span className="text-xs text-brand-brown opacity-70">{si.variation.label}</span>
                       )}
                     </div>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-sm text-brand-warm-gray">Sin productos detallados.</p>
+              <p className="text-sm text-brand-brown">Sin productos detallados.</p>
             )}
           </div>
 
-          <div className="mt-4 rounded-xl bg-brand-cream p-4 text-sm text-brand-warm-gray">
+          <div className="mt-4 rounded-xl bg-brand-cream p-4 text-sm text-brand-brown">
             Para consultas y compras, escribinos por{" "}
             <a
               href="https://www.instagram.com/ritualdelmate"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-brand-terracotta font-semibold hover:text-brand-terracotta-hover transition-colors"
+              className="text-brand-orange font-semibold hover:text-brand-orange-hover transition-colors"
             >
               Instagram
             </a>

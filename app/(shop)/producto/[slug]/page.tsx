@@ -57,7 +57,7 @@ export default async function ProductoPage({ params }: Props) {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
       <Link
         href="/catalogo"
-        className="text-sm text-brand-warm-gray hover:text-brand-charcoal transition-colors mb-8 inline-block"
+        className="text-sm text-brand-brown hover:text-brand-dark transition-colors mb-8 inline-block"
       >
         ← Volver al catálogo
       </Link>
@@ -73,29 +73,29 @@ export default async function ProductoPage({ params }: Props) {
           {product.category && (
             <Link
               href={`/catalogo?categoria=${product.category.slug}`}
-              className="text-xs font-semibold text-brand-olive uppercase tracking-wide hover:text-brand-olive-light transition-colors w-fit"
+              className="text-xs font-semibold text-brand-olive uppercase tracking-wide hover:text-brand-olive transition-colors w-fit"
             >
               {product.category.name}
             </Link>
           )}
 
-          <h1 className="text-3xl font-extrabold text-brand-charcoal leading-tight">
+          <h1 className="text-3xl font-extrabold text-brand-dark leading-tight">
             {product.name}
           </h1>
 
-          <p className="text-2xl font-bold text-brand-terracotta">{formatted}</p>
+          <p className="text-2xl font-bold text-brand-orange">{formatted}</p>
 
           {product.description && (
-            <p className="text-brand-warm-gray leading-relaxed">{product.description}</p>
+            <p className="text-brand-brown leading-relaxed">{product.description}</p>
           )}
 
-          <div className="mt-4 rounded-xl bg-brand-cream p-4 text-sm text-brand-warm-gray">
+          <div className="mt-4 rounded-xl bg-brand-cream p-4 text-sm text-brand-brown">
             Para consultas y compras, escribinos por{" "}
             <a
               href="https://www.instagram.com/ritualdelmate"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-brand-terracotta font-semibold hover:text-brand-terracotta-hover transition-colors"
+              className="text-brand-orange font-semibold hover:text-brand-orange-hover transition-colors"
             >
               Instagram
             </a>
