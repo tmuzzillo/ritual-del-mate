@@ -8,7 +8,7 @@ export default async function CatalogoPage() {
   const [{ data: allProducts }, { data: allCategories }] = await Promise.all([
     supabase
       .from("products")
-      .select("*, category:categories(id, name, slug)")
+      .select("*, category:categories(id, name, slug), variations:product_variations(id, images, is_default, is_active)")
       .eq("is_active", true)
       .order("created_at", { ascending: false }),
     supabase.from("categories").select("id, name, slug").order("name"),

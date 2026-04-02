@@ -4,6 +4,7 @@ export interface ProductVariation {
   label: string;
   images: string[];
   is_active: boolean;
+  is_default: boolean;
   sort_order: number;
   created_at: string;
 }

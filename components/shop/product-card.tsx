@@ -16,7 +16,9 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const coverImage = product.images[0] ?? null;
+  // Priorizar imagen de variación default, luego fallback a images[] del producto
+  const defaultVariation = product.variations?.find((v) => v.is_default && v.is_active);
+  const coverImage = defaultVariation?.images?.[0] ?? product.images[0] ?? null;
 
   return (
     <Link

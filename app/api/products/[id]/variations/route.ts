@@ -26,10 +26,18 @@ export async function POST(req: NextRequest, { params }: Params) {
   if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
   const { id } = await params;
-  const { label, images, sort_order } = await req.json();
+  const { label, images, sort_order, is_default } = await req.json();
 
   if (!label?.trim()) {
     return NextResponse.json({ error: "El label es obligatorio" }, { status: 400 });
+  }
+
+  // Si es_default, primero quitar el flag de las otras variaciones
+  if (is_default) {
+    await supabase
+      .from("product_variations")
+      .update({ is_default: false })
+      .eq("product_id", id);
   }
 
   const { data, error } = await supabase
@@ -39,6 +47,7 @@ export async function POST(req: NextRequest, { params }: Params) {
       label: label.trim(),
       images: images ?? [],
       sort_order: sort_order ?? 0,
+      is_default: is_default ?? false,
     })
     .select()
     .single();

@@ -12,7 +12,11 @@ interface ProductDetailClientProps {
 }
 
 export function ProductDetailClient({ images, name, variations }: ProductDetailClientProps) {
-  const [selectedVariationId, setSelectedVariationId] = useState<string | null>(null);
+  // Preseleccionar la variación default, o la primera si no hay default
+  const defaultVariation = variations.find((v) => v.is_default);
+  const [selectedVariationId, setSelectedVariationId] = useState<string | null>(
+    defaultVariation?.id ?? variations[0]?.id ?? null
+  );
 
   const selectedVariation = variations.find((v) => v.id === selectedVariationId) ?? null;
   const galleryImages =

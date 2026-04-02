@@ -8,6 +8,10 @@ que son esencialmente el mismo producto pero con imágenes y presentación disti
 crear productos separados ya que comparten nombre, descripción y precio. Las variaciones resuelven
 esto: un solo producto en el catálogo con múltiples opciones seleccionables.
 
+**Cambio arquitectónico (v2)**: El concepto de "producto padre" fue eliminado. Ahora todas las imágenes
+viven en variaciones. Una variación tiene `is_default = true` y es la que se preselecciona en la VIP
+y se muestra en el catálogo. El admin puede cambiar cuál es la default sin perder datos.
+
 ---
 
 ## User Scenarios & Testing *(mandatory)*
@@ -78,53 +82,53 @@ y al hacer clic en una, la galería principal cambia a las imágenes de esa vari
 
 **Why this priority**: Es la experiencia central del feature para el usuario final.
 
-**Independent Test**: Visitante abre `/producto/bombilla-artesanal`, ve 3 chips de variaciones, hace clic en "Perro" y la galería principal cambia a las fotos del perro.
+**Independent Test**: Visitante abre `/producto/bombilla-artesanal`, ve 3 chips de variaciones con la primera (default) preseleccionada, puede hacer clic en "Perro" y la galería cambia a esas fotos, y puede volver a hacer clic en la primera para volver a las imágenes default.
 
 **Acceptance Scenarios**:
-1. **Scenario**: Visitante llega a la VIP sin seleccionar variación
-   - **Given** Un producto tiene 3 variaciones activas
+1. **Scenario**: Visitante llega a la VIP — la variación default está preseleccionada
+   - **Given** Un producto tiene 3 variaciones activas (una con `is_default = true`)
    - **When** El visitante abre la VIP
-   - **Then** La galería muestra las imágenes del **producto padre** (default). Las variaciones se muestran debajo como chips sin ninguna seleccionada.
+   - **Then** La galería muestra las imágenes de la variación `is_default`. Los chips muestran todas las variaciones, con la default visualmente destacada.
 
-2. **Scenario**: Visitante selecciona una variación
-   - **Given** El visitante está en la VIP
+2. **Scenario**: Visitante selecciona otra variación
+   - **Given** El visitante está en la VIP con la variación default seleccionada
    - **When** Hace clic en el chip "Gato"
-   - **Then** La galería principal reemplaza sus imágenes por las de la variación "Gato". El chip queda marcado como activo.
+   - **Then** La galería principal reemplaza sus imágenes por las de la variación "Gato". El chip "Gato" queda marcado como activo, la default pierde el highlight.
 
-3. **Scenario**: Visitante vuelve a hacer clic en la variación activa
+3. **Scenario**: Visitante vuelve a seleccionar la variación default
    - **Given** El chip "Gato" está seleccionado
-   - **When** El visitante lo vuelve a hacer clic
-   - **Then** Se deselecciona y la galería vuelve a las imágenes del producto padre
+   - **When** El visitante hace clic en la variación default (la que tenía highlight)
+   - **Then** La galería vuelve a las imágenes de la variación default. El chip vuelve a tener el highlight.
 
 4. **Scenario**: Variación sin imágenes propias
-   - **Given** La variación "Verde" no tiene imágenes
+   - **Given** La variación "Verde" no tiene imágenes pero su variación padre (default) sí
    - **When** El visitante selecciona "Verde"
-   - **Then** La galería muestra las imágenes del producto padre como fallback (no queda vacía)
+   - **Then** La galería muestra las imágenes del default como fallback (no queda vacía)
 
 5. **Scenario**: Producto sin variaciones
-   - **Given** Un producto no tiene variaciones
+   - **Given** Un producto no tiene variaciones (edge case raro, idealmente no ocurre)
    - **When** El visitante abre la VIP
    - **Then** No se muestra ninguna sección de variaciones (comportamiento actual sin cambios)
 
 ---
 
 ### User Story 4 — Card en catálogo para productos con variaciones (Priority: P2)
-La card de un producto con variaciones muestra la imagen del producto padre, sin cambios visuales respecto a productos sin variaciones.
+La card de un producto con variaciones muestra la imagen de la variación default, sin cambios visuales respecto a productos sin variaciones.
 
-**Why this priority**: El catálogo debe ser consistente. La variación es un detalle de la VIP.
+**Why this priority**: El catálogo debe ser consistente. El admin decide qué imagen ve el comprador.
 
-**Independent Test**: Un producto con 4 variaciones aparece en el catálogo con la imagen del padre, igual que un producto sin variaciones.
+**Independent Test**: Un producto con 4 variaciones aparece en el catálogo con la imagen de la variación `is_default = true`. Si el admin cambia cuál es default, la imagen cambia automáticamente en el catálogo.
 
 **Acceptance Scenarios**:
-1. **Scenario**: Card muestra imagen del producto padre
-   - **Given** Un producto tiene `images[]` propio y 3 variaciones con sus imágenes
+1. **Scenario**: Card muestra imagen de la variación default
+   - **Given** Un producto tiene 3 variaciones activas, una con `is_default = true` que tiene imágenes
    - **When** El visitante ve el catálogo
-   - **Then** La card muestra `images[0]` del padre, sin indicador de variaciones
+   - **Then** La card muestra `images[0]` de la variación default, sin indicador de variaciones
 
-2. **Scenario**: Card de producto con variaciones pero sin imagen padre
-   - **Given** El producto padre no tiene `images[]` pero sus variaciones sí tienen
-   - **When** El visitante ve el catálogo
-   - **Then** La card muestra `images[0]` de la primera variación activa como fallback
+2. **Scenario**: Card de producto cuando admin cambia la default
+   - **Given** La card mostraba la imagen de "Variación A" (era default)
+   - **When** El admin va al admin panel y marca "Variación B" como default
+   - **Then** La card del catálogo ahora muestra automáticamente `images[0]` de "Variación B" (sin refresh manual)
 
 ---
 
@@ -165,35 +169,50 @@ Al armar un set, si el admin agrega un producto que tiene variaciones, debe eleg
 - Stock por variación (MVP 2 — el campo se reserva en DB pero no se implementa en UI)
 - Variaciones para sets o colecciones
 - Agregar el mismo producto con todas sus variaciones a un set y que el comprador elija en el checkout
+- Productos sin variaciones (todos los productos deben tener al menos una variación default)
+
+## Cambios desde v1
+**v1 (legacy)**: Concepto de "producto padre" con `products.images[]` separado de variaciones. UX pobre: no había forma de volver al "padre" desde otra variación.
+
+**v2 (actual)**: Eliminación del concepto padre. Todas las imágenes viven en variaciones. Una variación es `is_default = true`:
+- Se preselecciona en la VIP automáticamente
+- Se muestra en el catálogo automáticamente
+- El admin puede cambiarla sin perder datos
+- Transición automática: la migración 005 convierte `products.images[]` en variaciones default
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
-- **FR-001**: Un producto puede tener 0 o N variaciones activas
-- **FR-002**: Cada variación tiene: label (obligatorio), images[] (opcional), is_active, sort_order
+- **FR-001**: Un producto puede tener 0 o N variaciones activas (mínimo recomendado: 1)
+- **FR-002**: Cada variación tiene: label (obligatorio), images[] (opcional), is_active, **is_default**, sort_order
 - **FR-003**: El precio no varía entre variaciones; si cambia → es un producto nuevo
 - **FR-004**: La VIP muestra las variaciones activas del producto como chips (imagen + label)
 - **FR-005**: Al seleccionar un chip en la VIP, la galería principal cambia a las imágenes de esa variación
-- **FR-006**: Si la variación seleccionada no tiene imágenes, la galería muestra las del producto padre
-- **FR-007**: Al cargar la VIP, la galería muestra las imágenes del producto padre (ninguna variación preseleccionada)
-- **FR-008**: La card en el catálogo muestra `images[0]` del producto padre; si no tiene, `images[0]` de la primera variación activa
+- **FR-006**: Si la variación seleccionada no tiene imágenes, la galería muestra las de la variación default
+- **FR-007**: Al cargar la VIP, la galería muestra automáticamente las imágenes de la variación `is_default = true` (preseleccionada)
+- **FR-008**: La card en el catálogo muestra `images[0]` de la variación con `is_default = true`
 - **FR-009**: Al agregar un producto con variaciones a un set, el admin debe elegir una variación específica
 - **FR-010**: Al agregar un producto sin variaciones a un set, no se muestra selector de variación
 - **FR-011**: La eliminación de una variación vinculada a un set está bloqueada con advertencia
-- **FR-012**: El admin puede desactivar una variación sin eliminarla
-- **FR-013**: El campo `stock` se reserva en la tabla DB para MVP 2 pero no se expone en UI
+- **FR-012**: El admin puede desactivar una variación sin eliminarla (pero si es default, debe elegir otra antes)
+- **FR-013**: Solo una variación por producto puede tener `is_default = true`. Cuando se marca una como default, las demás se marcan como false automáticamente
+- **FR-014**: El campo `stock` se reserva en la tabla DB para MVP 2 pero no se expone en UI
 
 ### Key Entities
-- **ProductVariation**: id, product_id, label, images[], is_active, sort_order, (stock futuro), created_at
-- **Product** (existente, sin cambios de columnas): `images[]` sigue siendo el default/cover
+- **ProductVariation**: id, product_id, label, images[], is_active, **is_default**, sort_order, (stock futuro), created_at
+  - `is_default`: boolean, NOT NULL DEFAULT false. Garantiza unicidad: solo UNA variación por producto puede tener `is_default = true`
+- **Product** (existente, sin cambios de columnas): `images[]` se migraron a variaciones. Campo mantiene compatibilidad pero es legacy.
 - **SetItem** (existente): se agrega columna `variation_id UUID REFERENCES product_variations(id) ON DELETE SET NULL`
 
 ## Success Criteria *(mandatory)*
 
 ### Measurable Outcomes
-- **SC-001**: El admin puede crear, editar y desactivar variaciones desde el formulario de producto
+- **SC-001**: El admin puede crear, editar, desactivar variaciones y cambiar cuál es default desde el formulario de producto
 - **SC-002**: Un visitante puede seleccionar una variación en la VIP y ver sus imágenes en < 100ms (cambio local, sin request)
-- **SC-003**: La card del catálogo no cambia visualmente para productos con variaciones
+- **SC-003**: La card del catálogo muestra la imagen de la variación default automáticamente
 - **SC-004**: Un set con variación muestra correctamente la imagen de esa variación
 - **SC-005**: No es posible eliminar una variación vinculada a un set sin advertencia previa
 - **SC-006**: La DB está preparada para agregar stock por variación en MVP 2 sin migración destructiva
+- **SC-007**: Cuando el admin cambia la variación default en el panel admin, la imagen del catálogo se actualiza en tiempo real (sin refresh manual)
+- **SC-008**: El admin ve un ícono (⭐) que indica cuál es la variación default
+- **SC-009**: La variación default nunca puede quedar sin imágenes (fallback automático a la default si una variación no tiene propias)

@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import Image from "next/image";
-import { Plus, Pencil, Trash2, Check, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Check, X, Star } from "lucide-react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
@@ -64,6 +64,7 @@ export function ProductFormDialog({
   const [editingVariation, setEditingVariation] = useState<{ id: string; label: string; images: string[] } | null>(null);
   const [variationError, setVariationError] = useState<string | null>(null);
   const [savingVariation, setSavingVariation] = useState(false);
+  const [settingDefault, setSettingDefault] = useState<string | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -104,6 +105,7 @@ export function ProductFormDialog({
       }
       setNewVariation(null);
       setEditingVariation(null);
+      setSettingDefault(null);
     }
   }, [open, product, form]);
 
@@ -206,6 +208,28 @@ export function ProductFormDialog({
       setVariations(prev => prev.map(x => x.id === v.id ? json.data : x));
     } catch {
       toast.error("Error al actualizar la variación");
+    }
+  }
+
+  async function handleSetDefault(variationId: string) {
+    setSettingDefault(variationId);
+    try {
+      const res = await fetch(`/api/variations/${variationId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ is_default: true }),
+      });
+      const json = await res.json();
+      if (!res.ok) { toast.error(json.error ?? "Error"); return; }
+      setVariations(prev => prev.map(v => ({
+        ...v,
+        is_default: v.id === variationId ? true : false,
+      })));
+      toast.success("Variación establecida como default para el catálogo");
+    } catch {
+      toast.error("Error al establecer como default");
+    } finally {
+      setSettingDefault(null);
     }
   }
 
@@ -359,10 +383,13 @@ export function ProductFormDialog({
               )}
             />
 
-            <FormItem>
-              <FormLabel>Imágenes del producto</FormLabel>
-              <ImageUploader folder="products" images={images} onChange={setImages} />
-            </FormItem>
+            {/* Imágenes del producto: solo si no tiene variaciones */}
+            {(!isEditing || (!variationsLoading && variations.length === 0)) && (
+              <FormItem>
+                <FormLabel>Imágenes del producto</FormLabel>
+                <ImageUploader folder="products" images={images} onChange={setImages} />
+              </FormItem>
+            )}
 
             {/* Variaciones — solo disponibles al editar un producto existente */}
             {isEditing && (
@@ -426,22 +453,43 @@ export function ProductFormDialog({
                                 </div>
                               )}
                             </div>
-                            <span className={`flex-1 text-sm truncate ${!v.is_active ? "text-gray-400 line-through" : ""}`}>
-                              {v.label}
-                            </span>
-                            <Switch
-                              checked={v.is_active}
-                              onCheckedChange={() => handleToggleVariation(v)}
-                              className="scale-75"
-                            />
-                            <Button type="button" variant="ghost" size="sm" className="h-7 w-7 p-0"
-                              onClick={() => { setEditingVariation({ id: v.id, label: v.label, images: v.images }); setVariationError(null); }}>
-                              <Pencil className="h-3 w-3" />
-                            </Button>
-                            <Button type="button" variant="ghost" size="sm" className="h-7 w-7 p-0 text-red-500 hover:text-red-600"
-                              onClick={() => handleDeleteVariation(v)}>
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-1">
+                                <span className={`text-sm truncate ${!v.is_active ? "text-gray-400 line-through" : ""}`}>
+                                  {v.label}
+                                </span>
+                                {v.is_default && (
+                                  <Star className="h-4 w-4 fill-brand-terracotta text-brand-terracotta flex-shrink-0" />
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1 flex-shrink-0">
+                              {!v.is_default && (
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-7 text-xs px-2"
+                                  disabled={settingDefault === v.id}
+                                  onClick={() => handleSetDefault(v.id)}
+                                >
+                                  {settingDefault === v.id ? "..." : "Usar en catálogo"}
+                                </Button>
+                              )}
+                              <Switch
+                                checked={v.is_active}
+                                onCheckedChange={() => handleToggleVariation(v)}
+                                className="scale-75"
+                              />
+                              <Button type="button" variant="ghost" size="sm" className="h-7 w-7 p-0"
+                                onClick={() => { setEditingVariation({ id: v.id, label: v.label, images: v.images }); setVariationError(null); }}>
+                                <Pencil className="h-3 w-3" />
+                              </Button>
+                              <Button type="button" variant="ghost" size="sm" className="h-7 w-7 p-0 text-red-500 hover:text-red-600"
+                                onClick={() => handleDeleteVariation(v)}>
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
                           </div>
                         )}
                       </li>

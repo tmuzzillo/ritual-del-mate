@@ -10,10 +10,27 @@ export async function PUT(req: NextRequest, { params }: Params) {
   if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
   const { id } = await params;
-  const { label, images, is_active, sort_order } = await req.json();
+  const { label, images, is_active, sort_order, is_default } = await req.json();
 
   if (label !== undefined && !label?.trim()) {
     return NextResponse.json({ error: "El label no puede estar vacío" }, { status: 400 });
+  }
+
+  // Si es_default, primero quitar el flag de las otras variaciones del mismo producto
+  if (is_default) {
+    const { data: variation } = await supabase
+      .from("product_variations")
+      .select("product_id")
+      .eq("id", id)
+      .single();
+
+    if (variation) {
+      await supabase
+        .from("product_variations")
+        .update({ is_default: false })
+        .eq("product_id", variation.product_id)
+        .neq("id", id);
+    }
   }
 
   const updates: Record<string, unknown> = {};
@@ -21,6 +38,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
   if (images !== undefined) updates.images = images;
   if (is_active !== undefined) updates.is_active = is_active;
   if (sort_order !== undefined) updates.sort_order = sort_order;
+  if (is_default !== undefined) updates.is_default = is_default;
 
   const { data, error } = await supabase
     .from("product_variations")
