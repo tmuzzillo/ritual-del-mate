@@ -92,7 +92,7 @@ export default async function ProductoPage({ params }: Props) {
           <div className="mt-4 rounded-xl bg-brand-cream p-4 text-sm text-brand-brown">
             Para consultas y compras, escribinos por{" "}
             <a
-              href="https://www.instagram.com/ritualdelmate"
+              href="https://www.instagram.com/ritualdelmate.store?igsh=MWl2b2FzYXYzOWI2ZA%3D%3D&utm_source=qr"
               target="_blank"
               rel="noopener noreferrer"
               className="text-brand-orange font-semibold hover:text-brand-orange-hover transition-colors"

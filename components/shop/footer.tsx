@@ -20,7 +20,7 @@ export function Footer() {
         </nav>
 
         <a
-          href="https://www.instagram.com/ritualdelmate"
+          href="https://www.instagram.com/ritualdelmate.store?igsh=MWl2b2FzYXYzOWI2ZA%3D%3D&utm_source=qr"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2 text-sm hover:text-brand-sand transition-colors"

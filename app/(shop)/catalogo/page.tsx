@@ -11,7 +11,7 @@ export default async function CatalogoPage() {
       .select("*, category:categories(id, name, slug), variations:product_variations(id, images, is_default, is_active)")
       .eq("is_active", true)
       .order("created_at", { ascending: false }),
-    supabase.from("categories").select("id, name, slug").order("name"),
+    supabase.from("categories").select("id, name, slug, sort_order").order("sort_order").order("name"),
   ]);
 
   const products = (allProducts ?? []) as Product[];

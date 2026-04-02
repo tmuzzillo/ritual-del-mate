@@ -30,6 +30,7 @@ const schema = z.object({
     .min(1, "El slug es requerido")
     .max(255)
     .refine(isValidSlug, "Solo minúsculas, números y guiones"),
+  sort_order: z.number().int().min(0),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -50,7 +51,7 @@ export function CreateCategoryDialog({
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { name: "", slug: "" },
+    defaultValues: { name: "", slug: "", sort_order: 0 },
   });
 
   const nameValue = form.watch("name");
@@ -130,6 +131,25 @@ export function CreateCategoryDialog({
                       className={!manualSlug ? "bg-gray-50 text-gray-500" : ""}
                       placeholder="bombillas"
                       {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="sort_order"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Orden en filtros</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min={0}
+                      placeholder="0"
+                      {...field}
+                      onChange={(e) => field.onChange(e.target.valueAsNumber)}
                     />
                   </FormControl>
                   <FormMessage />

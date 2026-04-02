@@ -16,6 +16,7 @@ export interface CategoryWithCount {
   id: string;
   name: string;
   slug: string;
+  sort_order: number;
   created_at: string;
   product_count: number;
 }
@@ -98,6 +99,7 @@ export function CategoryTable({
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-16">Orden</TableHead>
               <TableHead>Nombre</TableHead>
               <TableHead>Slug</TableHead>
               <TableHead>Productos</TableHead>
@@ -107,6 +109,7 @@ export function CategoryTable({
           <TableBody>
             {categories.map((category) => (
               <TableRow key={category.id}>
+                <TableCell className="text-gray-500 text-sm">{category.sort_order}</TableCell>
                 <TableCell className="font-medium">{category.name}</TableCell>
                 <TableCell>
                   <Badge variant="secondary">{category.slug}</Badge>

@@ -14,7 +14,7 @@ export async function PUT(
 
   const { id } = await params;
   const body = await req.json();
-  const { name, slug } = body;
+  const { name, slug, sort_order } = body;
 
   if (!name || !slug) {
     return NextResponse.json({ error: "name y slug son requeridos" }, { status: 400 });
@@ -22,7 +22,7 @@ export async function PUT(
 
   const { data, error } = await supabase
     .from("categories")
-    .update({ name, slug })
+    .update({ name, slug, sort_order: sort_order ?? 0 })
     .eq("id", id)
     .select()
     .single();

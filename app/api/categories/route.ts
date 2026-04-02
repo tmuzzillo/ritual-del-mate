@@ -7,6 +7,7 @@ export async function GET() {
   const { data, error } = await supabase
     .from("categories")
     .select("*, products(count)")
+    .order("sort_order")
     .order("name");
 
   if (error) {
@@ -31,7 +32,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { name, slug } = body;
+  const { name, slug, sort_order } = body;
 
   if (!name || !slug) {
     return NextResponse.json({ error: "name y slug son requeridos" }, { status: 400 });
@@ -39,7 +40,7 @@ export async function POST(req: NextRequest) {
 
   const { data, error } = await supabase
     .from("categories")
-    .insert({ name, slug })
+    .insert({ name, slug, sort_order: sort_order ?? 0 })
     .select()
     .single();
 
