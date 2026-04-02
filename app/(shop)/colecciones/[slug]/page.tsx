@@ -42,7 +42,6 @@ export default async function ColeccionDetailPage({ params }: Props) {
 
   if (!collection) notFound();
 
-  // Fetch active products and sets in this collection via junction tables
   const [{ data: cpRows }, { data: csRows }] = await Promise.all([
     supabase
       .from("collection_products")
@@ -68,7 +67,7 @@ export default async function ColeccionDetailPage({ params }: Props) {
   return (
     <div>
       {/* Header */}
-      <div className="relative bg-brand-cream h-48 sm:h-64 overflow-hidden">
+      <div className="relative bg-brand-dark h-64 sm:h-80 overflow-hidden">
         {coverImage && (
           <Image
             src={coverImage}
@@ -79,13 +78,18 @@ export default async function ColeccionDetailPage({ params }: Props) {
             priority
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/60 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 max-w-6xl mx-auto px-4 sm:px-6 pb-6">
+        <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/80 via-brand-dark/30 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 max-w-6xl mx-auto px-4 sm:px-6 pb-8">
+          {collection.tagline && (
+            <p className="text-brand-orange text-xs font-semibold uppercase tracking-widest mb-2">
+              {collection.tagline}
+            </p>
+          )}
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white leading-tight">
             {collection.name}
           </h1>
           {collection.description && (
-            <p className="text-white/80 text-sm sm:text-base mt-1 max-w-2xl">
+            <p className="text-white/70 text-sm sm:text-base mt-2 max-w-2xl">
               {collection.description}
             </p>
           )}
@@ -95,7 +99,7 @@ export default async function ColeccionDetailPage({ params }: Props) {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <Link
           href="/colecciones"
-          className="text-sm text-brand-brown hover:text-brand-dark transition-colors mb-8 inline-block"
+          className="text-sm text-brand-brown hover:text-brand-dark transition-colors mb-10 inline-block"
         >
           ← Volver a colecciones
         </Link>
@@ -107,24 +111,32 @@ export default async function ColeccionDetailPage({ params }: Props) {
             </p>
           </div>
         ) : (
-          <div className="space-y-12">
-            {products.length > 0 && (
+          <div className="space-y-14">
+            {/* Sets primero */}
+            {sets.length > 0 && (
               <section>
-                <h2 className="text-xl font-extrabold text-brand-dark mb-6">Productos</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-                  {products.map((product) => (
-                    <ProductCard key={product.id} product={product} />
+                <p className="text-brand-orange text-xs font-semibold uppercase tracking-widest mb-1">
+                  Armados con intención
+                </p>
+                <h2 className="text-2xl font-extrabold text-brand-dark mb-6">Sets</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  {sets.map((set) => (
+                    <SetCard key={set.id} set={set} />
                   ))}
                 </div>
               </section>
             )}
 
-            {sets.length > 0 && (
+            {/* Productos después */}
+            {products.length > 0 && (
               <section>
-                <h2 className="text-xl font-extrabold text-brand-dark mb-6">Sets</h2>
-                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                  {sets.map((set) => (
-                    <SetCard key={set.id} set={set} />
+                <p className="text-brand-orange text-xs font-semibold uppercase tracking-widest mb-1">
+                  Piezas sueltas
+                </p>
+                <h2 className="text-2xl font-extrabold text-brand-dark mb-6">Productos</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                  {products.map((product) => (
+                    <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
               </section>
