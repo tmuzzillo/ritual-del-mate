@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     .select(`
       *,
       category:categories(id, name, slug),
-      set_items(id, quantity, variation_id, product:products(id, name, slug, price, images, is_active), variation:product_variations(id, label, images))
+      set_items(id, product_id, quantity, variation_id, is_gift, product:products(id, name, slug, price, images, is_active), variation:product_variations(id, label, images))
     `)
     .order("created_at", { ascending: false });
 
@@ -60,11 +60,12 @@ export async function POST(req: NextRequest) {
   }
 
   if (items && items.length > 0) {
-    const setItems = items.map((item: { product_id: string; quantity: number; variation_id?: string | null }) => ({
+    const setItems = items.map((item: { product_id: string; quantity: number; variation_id?: string | null; is_gift?: boolean }) => ({
       set_id: set.id,
       product_id: item.product_id,
       quantity: item.quantity,
       variation_id: item.variation_id ?? null,
+      is_gift: item.is_gift ?? false,
     }));
 
     const { error: itemsError } = await supabase.from("set_items").insert(setItems);
@@ -79,7 +80,7 @@ export async function POST(req: NextRequest) {
     .select(`
       *,
       category:categories(id, name, slug),
-      set_items(id, quantity, variation_id, product:products(id, name, slug, price, images, is_active), variation:product_variations(id, label, images))
+      set_items(id, product_id, quantity, variation_id, is_gift, product:products(id, name, slug, price, images, is_active), variation:product_variations(id, label, images))
     `)
     .eq("id", set.id)
     .single();

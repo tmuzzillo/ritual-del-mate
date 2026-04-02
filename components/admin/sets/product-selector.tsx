@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Minus, Plus, X, Search } from "lucide-react";
+import { Minus, Plus, X, Search, Gift } from "lucide-react";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +15,7 @@ export interface SelectedItem {
   variation_id?: string | null;
   variation?: ProductVariation | null;
   variations?: ProductVariation[]; // active variations available for this product
+  is_gift: boolean;
 }
 
 interface ProductSelectorProps {
@@ -83,6 +84,7 @@ export function ProductSelector({ selected, onChange }: ProductSelectorProps) {
       variation_id: null,
       variation: null,
       variations,
+      is_gift: false,
     };
 
     onChange([...selected, newItem]);
@@ -107,6 +109,14 @@ export function ProductSelector({ selected, onChange }: ProductSelectorProps) {
     );
   }
 
+  function toggleGift(productId: string) {
+    onChange(
+      selected.map((s) =>
+        s.product_id === productId ? { ...s, is_gift: !s.is_gift } : s
+      )
+    );
+  }
+
   function pickVariation(productId: string, variation: ProductVariation) {
     onChange(
       selected.map((s) =>
@@ -126,7 +136,7 @@ export function ProductSelector({ selected, onChange }: ProductSelectorProps) {
       {selected.length > 0 && (
         <ul className="space-y-2">
           {selected.map((item) => {
-            const { product, quantity, product_id, variation, variations = [] } = item;
+            const { product, quantity, product_id, variation, variations = [], is_gift } = item;
             const isPending = pendingVariationPick === product_id;
 
             return (
@@ -161,6 +171,16 @@ export function ProductSelector({ selected, onChange }: ProductSelectorProps) {
                       <Plus className="h-3 w-3" />
                     </Button>
                   </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className={`h-7 w-7 transition-colors ${is_gift ? "text-brand-orange" : "text-gray-300 hover:text-gray-400"}`}
+                    title={is_gift ? "Quitar regalo" : "Marcar como regalo"}
+                    onClick={() => toggleGift(product_id)}
+                  >
+                    <Gift className="h-3.5 w-3.5" />
+                  </Button>
                   <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-gray-400"
                     onClick={() => removeProduct(product_id)}>
                     <X className="h-3 w-3" />

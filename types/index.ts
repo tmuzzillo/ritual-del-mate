@@ -41,6 +41,7 @@ export interface SetItem {
   quantity: number;
   variation_id?: string | null;
   variation?: ProductVariation | null;
+  is_gift: boolean;
 }
 
 export interface Collection {

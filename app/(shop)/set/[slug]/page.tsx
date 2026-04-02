@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Gift } from "lucide-react";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ImageGallery } from "@/components/shop/image-gallery";
@@ -36,7 +37,7 @@ export default async function SetPage({ params }: Props) {
       *,
       category:categories(id, name, slug),
       set_items(
-        id, quantity,
+        id, quantity, is_gift,
         product:products(id, name, slug, price, images, is_active),
         variation:product_variations(id, label, images)
       )
@@ -77,7 +78,7 @@ export default async function SetPage({ params }: Props) {
           <p className="text-2xl font-bold text-brand-orange">{formatted}</p>
 
           {set.description && (
-            <p className="text-brand-brown leading-relaxed">{set.description}</p>
+            <p className="text-brand-brown leading-relaxed whitespace-pre-wrap">{set.description}</p>
           )}
 
           {/* Products in set */}
@@ -87,11 +88,15 @@ export default async function SetPage({ params }: Props) {
             </h2>
             {activeItems.length > 0 ? (
               <ul className="space-y-2">
-                {activeItems.map((si: { id: string; quantity: number; product?: { name: string; slug: string } | null; variation?: { label: string } | null }) => (
+                {activeItems.map((si: { id: string; quantity: number; is_gift?: boolean; product?: { name: string; slug: string } | null; variation?: { label: string } | null }) => (
                   <li key={si.id} className="flex items-center gap-3 text-sm text-brand-brown">
-                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-cream text-brand-dark font-bold text-xs flex items-center justify-center">
-                      {si.quantity}
-                    </span>
+                    {si.is_gift ? (
+                      <Gift className="flex-shrink-0 h-5 w-5 text-brand-orange" />
+                    ) : (
+                      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-cream text-brand-dark font-bold text-xs flex items-center justify-center">
+                        {si.quantity}
+                      </span>
+                    )}
                     <div>
                       {si.product ? (
                         <Link
@@ -99,6 +104,7 @@ export default async function SetPage({ params }: Props) {
                           className="hover:text-brand-dark transition-colors block"
                         >
                           {si.product.name}
+                          {si.is_gift && <span className="ml-1.5 text-xs text-brand-orange font-semibold">· de regalo</span>}
                         </Link>
                       ) : (
                         <span>Producto</span>
