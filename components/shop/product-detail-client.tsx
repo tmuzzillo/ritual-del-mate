@@ -24,7 +24,7 @@ export function ProductDetailClient({ images, name, variations }: ProductDetailC
 
   return (
     <div className="space-y-4">
-      <ImageGallery images={galleryImages} name={name} />
+      <ImageGallery key={selectedVariationId ?? "base"} images={galleryImages} name={name} />
       {variations.length > 0 && (
         <VariationSelector
           variations={variations}
