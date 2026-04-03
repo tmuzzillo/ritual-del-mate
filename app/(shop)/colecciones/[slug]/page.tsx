@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getImageUrl } from "@/lib/utils/image";
 import { createClient } from "@/lib/supabase/server";
 import { ProductCard } from "@/components/shop/product-card";
 import { SetCard } from "@/components/shop/set-card";
@@ -70,7 +71,7 @@ export default async function ColeccionDetailPage({ params }: Props) {
       <div className="relative bg-brand-dark h-64 sm:h-80 overflow-hidden">
         {coverImage && (
           <Image
-            src={coverImage}
+            src={getImageUrl(coverImage, 1600)}
             alt={collection.name}
             fill
             sizes="100vw"

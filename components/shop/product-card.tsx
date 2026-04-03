@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getImageUrl } from "@/lib/utils/image";
 import type { Product } from "@/types";
 
 function formatPrice(price: number | null): string {
@@ -28,7 +29,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="relative aspect-square bg-brand-cream overflow-hidden">
         {coverImage ? (
           <Image
-            src={coverImage}
+            src={getImageUrl(coverImage, 600)}
             alt={product.name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getImageUrl } from "@/lib/utils/image";
 import type { Collection } from "@/types";
 
 interface CollectionCardHomeProps {
@@ -17,7 +18,7 @@ export function CollectionCardHome({ collection }: CollectionCardHomeProps) {
       {/* Imagen de fondo */}
       {coverImage ? (
         <Image
-          src={coverImage}
+          src={getImageUrl(coverImage, 900)}
           alt={collection.name}
           fill
           sizes="(max-width: 768px) 100vw, 33vw"

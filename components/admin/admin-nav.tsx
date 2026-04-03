@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { href: "/admin/productos", label: "Productos" },
   { href: "/admin/sets", label: "Sets" },
   { href: "/admin/colecciones", label: "Colecciones" },
+  { href: "/admin/media", label: "Media" },
 ];
 
 export function AdminNav() {

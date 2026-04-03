@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getImageUrl } from "@/lib/utils/image";
 import { createClient } from "@/lib/supabase/server";
 import type { Collection } from "@/types";
 
@@ -28,7 +29,7 @@ export default async function ColeccionesPage() {
             >
               {col.images[0] && (
                 <Image
-                  src={col.images[0]}
+                  src={getImageUrl(col.images[0], 900)}
                   alt={col.name}
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

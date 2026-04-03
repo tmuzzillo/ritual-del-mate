@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/utils/image";
 
 interface ImageGalleryProps {
   images: string[];
@@ -23,7 +24,7 @@ export function ImageGallery({ images, name }: ImageGalleryProps) {
     <div className="space-y-3">
       <div className="relative aspect-square bg-brand-cream rounded-2xl overflow-hidden">
         <Image
-          src={images[selected]}
+          src={getImageUrl(images[selected], 1200, 85)}
           alt={name}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
@@ -46,7 +47,7 @@ export function ImageGallery({ images, name }: ImageGalleryProps) {
               }`}
             >
               <Image
-                src={img}
+                src={getImageUrl(img, 128)}
                 alt={`${name} ${i + 1}`}
                 fill
                 sizes="64px"

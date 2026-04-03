@@ -2,9 +2,16 @@
 
 import { useRef, useState } from "react";
 import Image from "next/image";
+import imageCompression from "browser-image-compression";
 import { createClient } from "@/lib/supabase/client";
 import { X, ImagePlus, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+const COMPRESSION_OPTIONS = {
+  maxSizeMB: 0.8,
+  maxWidthOrHeight: 1920,
+  useWebWorker: true,
+};
 
 interface ImageUploaderProps {
   folder: string;
@@ -50,12 +57,12 @@ export function ImageUploader({
       const uploadedUrls: string[] = [];
 
       for (const file of toUpload) {
-        const ext = file.name.split(".").pop();
-        const path = `${folder}/${crypto.randomUUID()}.${ext}`;
+        const compressed = await imageCompression(file, COMPRESSION_OPTIONS);
+        const path = `${folder}/${crypto.randomUUID()}.jpg`;
 
         const { error: uploadError } = await supabase.storage
           .from("images")
-          .upload(path, file, { cacheControl: "3600", upsert: false });
+          .upload(path, compressed, { cacheControl: "3600", upsert: false, contentType: "image/jpeg" });
 
         if (uploadError) throw uploadError;
 

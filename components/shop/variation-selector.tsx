@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { getImageUrl } from "@/lib/utils/image";
 import type { ProductVariation } from "@/types";
 
 interface VariationSelectorProps {
@@ -33,7 +34,7 @@ export function VariationSelector({ variations, selectedId, onSelect }: Variatio
               <div className="relative w-16 h-16 rounded-md overflow-hidden bg-brand-cream">
                 {v.images[0] ? (
                   <Image
-                    src={v.images[0]}
+                    src={getImageUrl(v.images[0], 128)}
                     alt={v.label}
                     fill
                     sizes="64px"
