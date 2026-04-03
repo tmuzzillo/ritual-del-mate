@@ -8,13 +8,18 @@ export default async function CatalogoPage() {
   const [{ data: allProducts }, { data: allCategories }] = await Promise.all([
     supabase
       .from("products")
-      .select("*, category:categories(id, name, slug), variations:product_variations(id, images, is_default, is_active)")
+      .select("*, category:categories(id, name, slug, sort_order), variations:product_variations(id, images, is_default, is_active)")
       .eq("is_active", true)
       .order("created_at", { ascending: false }),
     supabase.from("categories").select("id, name, slug, sort_order").order("sort_order").order("name"),
   ]);
 
-  const products = (allProducts ?? []) as Product[];
+  const products = ((allProducts ?? []) as Product[]).sort((a, b) => {
+    const orderA = a.category?.sort_order ?? 999;
+    const orderB = b.category?.sort_order ?? 999;
+    if (orderA !== orderB) return orderA - orderB;
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
 
   // Solo mostrar categorías que tienen al menos un producto activo
   const activeCategorySlugs = new Set(

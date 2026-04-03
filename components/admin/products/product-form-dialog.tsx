@@ -358,6 +358,7 @@ export function ProductFormDialog({
               />
             </div>
 
+
             <FormField
               control={form.control}
               name="category_id"
