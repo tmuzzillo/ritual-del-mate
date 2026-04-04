@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { FallbackImage } from "@/components/shop/fallback-image";
 import { ProductDetailClient } from "@/components/shop/product-detail-client";
 import {
   Accordion,
@@ -173,7 +173,7 @@ export default async function ProductoPage({ params }: Props) {
                 <Link key={`${item.type}-${item.id}`} href={href} className="group">
                   <div className="aspect-square bg-brand-cream rounded-xl overflow-hidden mb-3">
                     {firstImage ? (
-                      <Image
+                      <FallbackImage
                         src={firstImage}
                         alt={item.name}
                         width={300}

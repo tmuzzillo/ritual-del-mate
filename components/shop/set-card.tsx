@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getImageUrl } from "@/lib/utils/image";
+import { BadgePill } from "@/components/shop/badge-pill";
 import type { MateSet } from "@/types";
 
 interface SetCardProps {
@@ -23,6 +24,7 @@ export function SetCard({ set }: SetCardProps) {
       className="group flex flex-col bg-brand-cream rounded-2xl overflow-hidden border border-brand-sand hover:shadow-md transition-shadow"
     >
       <div className="relative aspect-square bg-brand-cream overflow-hidden">
+        {set.badge_text && <BadgePill text={set.badge_text} />}
         {coverImage ? (
           <Image
             src={getImageUrl(coverImage, 600)}

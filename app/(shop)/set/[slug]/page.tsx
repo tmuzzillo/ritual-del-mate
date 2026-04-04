@@ -1,9 +1,9 @@
 import Link from "next/link";
-import Image from "next/image";
 import { Gift } from "lucide-react";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ImageGallery } from "@/components/shop/image-gallery";
+import { FallbackImage } from "@/components/shop/fallback-image";
 import {
   Accordion,
   AccordionContent,
@@ -204,7 +204,7 @@ export default async function SetPage({ params }: Props) {
                 <Link key={`${item.type}-${item.id}`} href={href} className="group">
                   <div className="aspect-square bg-brand-cream rounded-xl overflow-hidden mb-3">
                     {firstImage ? (
-                      <Image
+                      <FallbackImage
                         src={firstImage}
                         alt={item.name}
                         width={300}

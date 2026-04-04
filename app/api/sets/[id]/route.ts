@@ -31,7 +31,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
   if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
   const { id } = await params;
-  const { name, slug, description, price, images, category_id, is_active, featured, items } =
+  const { name, slug, description, badge_text, price, images, category_id, is_active, featured, items } =
     await req.json();
 
   if (!name || !slug || price == null) {
@@ -44,6 +44,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
       name,
       slug,
       description: description ?? null,
+      badge_text: badge_text ?? null,
       price,
       images: images ?? [],
       category_id: category_id ?? null,

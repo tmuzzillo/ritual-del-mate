@@ -69,5 +69,6 @@ export interface MateSet {
   is_active: boolean;
   featured: boolean;
   set_items?: SetItem[];
+  badge_text?: string | null;
   created_at: string;
 }

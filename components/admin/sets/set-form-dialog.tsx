@@ -27,6 +27,7 @@ const schema = z.object({
   name: z.string().min(1, "El nombre es requerido").max(255),
   slug: z.string().min(1, "El slug es requerido").max(255).refine(isValidSlug, "Solo minúsculas, números y guiones"),
   description: z.string().optional(),
+  badge_text: z.string().max(60).optional().nullable(),
   price: z.number().positive("Debe ser mayor a 0"),
   category_id: z.string().nullable(),
   is_active: z.boolean(),
@@ -59,7 +60,7 @@ export function SetFormDialog({
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: "", slug: "", description: "", price: undefined,
+      name: "", slug: "", description: "", badge_text: null, price: undefined,
       category_id: null, is_active: false, featured: false,
     },
   });
@@ -71,6 +72,7 @@ export function SetFormDialog({
           name: set.name,
           slug: set.slug,
           description: set.description ?? "",
+          badge_text: set.badge_text ?? null,
           price: set.price,
           category_id: set.category_id,
           is_active: set.is_active,
@@ -89,7 +91,7 @@ export function SetFormDialog({
         );
         setManualSlug(true);
       } else {
-        form.reset({ name: "", slug: "", description: "", price: undefined, category_id: null, is_active: false, featured: false });
+        form.reset({ name: "", slug: "", description: "", badge_text: null, price: undefined, category_id: null, is_active: false, featured: false });
         setImages([]);
         setItems([]);
         setManualSlug(false);
@@ -117,6 +119,7 @@ export function SetFormDialog({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...values,
+          badge_text: values.badge_text || null,
           images,
           items: items.map((i) => ({ product_id: i.product_id, quantity: i.quantity, variation_id: i.variation_id ?? null, is_gift: i.is_gift })),
         }),
@@ -191,6 +194,27 @@ export function SetFormDialog({
                   <FormControl>
                     <Textarea placeholder="Describí el set..." rows={3} {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="badge_text"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Texto destacado <span className="text-gray-400 font-normal">(opcional)</span></FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Ej: Incluye yerba de regalo"
+                      maxLength={60}
+                      {...field}
+                      value={field.value ?? ""}
+                      onChange={(e) => field.onChange(e.target.value || null)}
+                    />
+                  </FormControl>
+                  <p className="text-xs text-gray-400">Se muestra como badge sobre la imagen de la card. Máx. 60 caracteres.</p>
                   <FormMessage />
                 </FormItem>
               )}
