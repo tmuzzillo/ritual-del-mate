@@ -60,8 +60,8 @@ export function ProductFormDialog({
   // Variations state
   const [variations, setVariations] = useState<ProductVariation[]>([]);
   const [variationsLoading, setVariationsLoading] = useState(false);
-  const [newVariation, setNewVariation] = useState<{ label: string; images: string[] } | null>(null);
-  const [editingVariation, setEditingVariation] = useState<{ id: string; label: string; images: string[] } | null>(null);
+  const [newVariation, setNewVariation] = useState<{ label: string; images: string[]; stock: number } | null>(null);
+  const [editingVariation, setEditingVariation] = useState<{ id: string; label: string; images: string[]; stock: number } | null>(null);
   const [variationError, setVariationError] = useState<string | null>(null);
   const [savingVariation, setSavingVariation] = useState(false);
   const [settingDefault, setSettingDefault] = useState<string | null>(null);
@@ -106,6 +106,7 @@ export function ProductFormDialog({
       setNewVariation(null);
       setEditingVariation(null);
       setSettingDefault(null);
+      setVariationError(null);
     }
   }, [open, product, form]);
 
@@ -156,7 +157,12 @@ export function ProductFormDialog({
       const res = await fetch(`/api/products/${product.id}/variations`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ label: newVariation.label.trim(), images: newVariation.images, sort_order: variations.length }),
+        body: JSON.stringify({
+          label: newVariation.label.trim(),
+          images: newVariation.images,
+          stock: newVariation.stock,
+          sort_order: variations.length,
+        }),
       });
       const json = await res.json();
       if (!res.ok) { setVariationError(json.error ?? "Error al guardar"); return; }
@@ -182,7 +188,11 @@ export function ProductFormDialog({
       const res = await fetch(`/api/variations/${editingVariation.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ label: editingVariation.label.trim(), images: editingVariation.images }),
+        body: JSON.stringify({
+          label: editingVariation.label.trim(),
+          images: editingVariation.images,
+          stock: editingVariation.stock,
+        }),
       });
       const json = await res.json();
       if (!res.ok) { setVariationError(json.error ?? "Error al guardar"); return; }
@@ -342,16 +352,21 @@ export function ProductFormDialog({
                 name="stock"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Stock</FormLabel>
+                    <FormLabel>Stock {variations.length > 0 && <span className="text-gray-400 font-normal">(no se usa con variaciones)</span>}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         min={0}
                         placeholder="0"
                         value={field.value}
+                        disabled={variations.length > 0}
                         onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                        className={variations.length > 0 ? "bg-gray-50 text-gray-400" : ""}
                       />
                     </FormControl>
+                    {variations.length > 0 && (
+                      <p className="text-xs text-gray-500 mt-1">Este producto tiene variaciones. El stock se gestiona por variación.</p>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
@@ -403,7 +418,7 @@ export function ProductFormDialog({
                       variant="ghost"
                       size="sm"
                       className="h-7 text-xs"
-                      onClick={() => { setNewVariation({ label: "", images: [] }); setVariationError(null); }}
+                      onClick={() => { setNewVariation({ label: "", images: [], stock: 0 }); setVariationError(null); }}
                     >
                       <Plus className="h-3 w-3 mr-1" /> Agregar
                     </Button>
@@ -424,6 +439,14 @@ export function ProductFormDialog({
                               placeholder="Label (ej: Rojo)"
                               value={editingVariation.label}
                               onChange={e => setEditingVariation(prev => prev ? { ...prev, label: e.target.value } : null)}
+                              className="h-8 text-sm"
+                            />
+                            <Input
+                              type="number"
+                              min={0}
+                              placeholder="Stock"
+                              value={editingVariation.stock}
+                              onChange={e => setEditingVariation(prev => prev ? { ...prev, stock: parseInt(e.target.value) || 0 } : null)}
                               className="h-8 text-sm"
                             />
                             <ImageUploader
@@ -455,13 +478,18 @@ export function ProductFormDialog({
                               )}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-1">
-                                <span className={`text-sm truncate ${!v.is_active ? "text-gray-400 line-through" : ""}`}>
-                                  {v.label}
-                                </span>
-                                {v.is_default && (
-                                  <Star className="h-4 w-4 fill-brand-orange text-brand-orange flex-shrink-0" />
-                                )}
+                              <div className="flex items-center gap-2">
+                                <div>
+                                  <div className="flex items-center gap-1">
+                                    <span className={`text-sm truncate ${!v.is_active ? "text-gray-400 line-through" : ""}`}>
+                                      {v.label}
+                                    </span>
+                                    {v.is_default && (
+                                      <Star className="h-4 w-4 fill-brand-orange text-brand-orange flex-shrink-0" />
+                                    )}
+                                  </div>
+                                  <p className="text-xs text-gray-400">Stock: {v.stock}</p>
+                                </div>
                               </div>
                             </div>
                             <div className="flex items-center gap-1 flex-shrink-0">
@@ -483,7 +511,7 @@ export function ProductFormDialog({
                                 className="scale-75"
                               />
                               <Button type="button" variant="ghost" size="sm" className="h-7 w-7 p-0"
-                                onClick={() => { setEditingVariation({ id: v.id, label: v.label, images: v.images }); setVariationError(null); }}>
+                                onClick={() => { setEditingVariation({ id: v.id, label: v.label, images: v.images, stock: v.stock }); setVariationError(null); }}>
                                 <Pencil className="h-3 w-3" />
                               </Button>
                               <Button type="button" variant="ghost" size="sm" className="h-7 w-7 p-0 text-red-500 hover:text-red-600"
@@ -505,6 +533,14 @@ export function ProductFormDialog({
                       placeholder="Label (ej: Rojo, Perro, Verde)"
                       value={newVariation.label}
                       onChange={e => setNewVariation(prev => prev ? { ...prev, label: e.target.value } : null)}
+                      className="h-8 text-sm"
+                    />
+                    <Input
+                      type="number"
+                      min={0}
+                      placeholder="Stock"
+                      value={newVariation.stock}
+                      onChange={e => setNewVariation(prev => prev ? { ...prev, stock: parseInt(e.target.value) || 0 } : null)}
                       className="h-8 text-sm"
                     />
                     <ImageUploader

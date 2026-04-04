@@ -10,6 +10,8 @@ const NAV_ITEMS = [
   { href: "/admin/sets", label: "Sets" },
   { href: "/admin/colecciones", label: "Colecciones" },
   { href: "/admin/media", label: "Media" },
+  { href: "/admin/pedidos", label: "Pedidos" },
+  { href: "/admin/configuracion", label: "Configuración" },
 ];
 
 export function AdminNav() {

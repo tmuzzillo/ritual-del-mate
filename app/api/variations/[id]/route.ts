@@ -10,7 +10,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
   if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
   const { id } = await params;
-  const { label, images, is_active, sort_order, is_default } = await req.json();
+  const { label, images, stock, is_active, sort_order, is_default } = await req.json();
 
   if (label !== undefined && !label?.trim()) {
     return NextResponse.json({ error: "El label no puede estar vacío" }, { status: 400 });
@@ -36,6 +36,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
   const updates: Record<string, unknown> = {};
   if (label !== undefined) updates.label = label.trim();
   if (images !== undefined) updates.images = images;
+  if (stock !== undefined) updates.stock = stock;
   if (is_active !== undefined) updates.is_active = is_active;
   if (sort_order !== undefined) updates.sort_order = sort_order;
   if (is_default !== undefined) updates.is_default = is_default;

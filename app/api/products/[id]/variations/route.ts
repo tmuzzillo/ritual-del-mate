@@ -26,7 +26,7 @@ export async function POST(req: NextRequest, { params }: Params) {
   if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
   const { id } = await params;
-  const { label, images, sort_order, is_default } = await req.json();
+  const { label, images, stock, sort_order, is_default } = await req.json();
 
   if (!label?.trim()) {
     return NextResponse.json({ error: "El label es obligatorio" }, { status: 400 });
@@ -46,6 +46,7 @@ export async function POST(req: NextRequest, { params }: Params) {
       product_id: id,
       label: label.trim(),
       images: images ?? [],
+      stock: stock ?? 0,
       sort_order: sort_order ?? 0,
       is_default: is_default ?? false,
     })

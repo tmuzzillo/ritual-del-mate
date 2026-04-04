@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
+import { CheckCircle2, AlertCircle } from "lucide-react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
@@ -105,6 +106,15 @@ export function SetFormDialog({
       form.setValue("slug", generateSlug(nameValue), { shouldValidate: !!nameValue });
     }
   }, [nameValue, manualSlug, isEditing, form]);
+
+  // Calculate availability: check if all items have sufficient stock
+  function isSetAvailable(): boolean {
+    if (items.length === 0) return true;
+    return items.every((item) => {
+      const itemStock = item.variation ? item.variation.stock : item.product.stock;
+      return itemStock > 0;
+    });
+  }
 
   function handleClose() { onOpenChange(false); }
 
@@ -277,6 +287,25 @@ export function SetFormDialog({
             <FormItem>
               <FormLabel>Productos del set</FormLabel>
               <ProductSelector selected={items} onChange={setItems} />
+              {isEditing && items.length > 0 && (
+                <div className={`mt-2 flex items-center gap-2 p-3 rounded-lg ${
+                  isSetAvailable()
+                    ? 'bg-green-50 border border-green-200'
+                    : 'bg-red-50 border border-red-200'
+                }`}>
+                  {isSetAvailable() ? (
+                    <>
+                      <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
+                      <span className="text-sm text-green-700 font-medium">Disponible</span>
+                    </>
+                  ) : (
+                    <>
+                      <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
+                      <span className="text-sm text-red-700 font-medium">Sin stock en uno o más productos</span>
+                    </>
+                  )}
+                </div>
+              )}
             </FormItem>
 
             <FormField
