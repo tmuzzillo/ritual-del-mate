@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { Gift } from "lucide-react";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { ImageGallery } from "@/components/shop/image-gallery";
 import { FallbackImage } from "@/components/shop/fallback-image";
+import { SetDetailClient } from "@/components/shop/set-detail-client";
 import {
   Accordion,
   AccordionContent,
@@ -11,6 +10,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import type { Metadata } from "next";
+import type { SetItem } from "@/types";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -45,8 +45,8 @@ export default async function SetPage({ params }: Props) {
       category:categories(id, name, slug),
       set_items(
         id, quantity, is_gift,
-        product:products(id, name, slug, price, images, is_active),
-        variation:product_variations(id, label, images)
+        product:products(id, name, slug, price, images, is_active, stock),
+        variation:product_variations(id, label, images, stock)
       )
     `)
     .eq("slug", slug)
@@ -83,11 +83,9 @@ export default async function SetPage({ params }: Props) {
   }).format(set.price ?? 0);
 
   const activeItems = (set.set_items ?? []).filter(
-    (si: { product?: { is_active: boolean } | null }) => si.product?.is_active
+    (si: SetItem) => si.product?.is_active
   );
 
-  const waMessage = encodeURIComponent(`Hola! Me interesa el set "${set.name}" 🧉`);
-  const waUrl = `https://wa.me/543535104448?text=${waMessage}`;
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
@@ -98,94 +96,34 @@ export default async function SetPage({ params }: Props) {
         ← Volver a sets
       </Link>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
-        <ImageGallery images={set.images} name={set.name} />
+      <SetDetailClient
+        set={{ ...set, set_items: set.set_items ?? [] }}
+        activeItems={activeItems}
+        formatted={formatted}
+      />
 
-        <div className="flex flex-col gap-4">
-          <span className="text-xs font-semibold text-brand-olive uppercase tracking-wide">Set</span>
-
-          <h1 className="text-3xl font-extrabold text-brand-dark leading-tight">{set.name}</h1>
-
-          <p className="text-2xl font-bold text-brand-orange">{formatted}</p>
-
-          {set.description && (
-            <p className="text-brand-brown leading-relaxed whitespace-pre-wrap">{set.description}</p>
-          )}
-
-          {activeItems.length > 0 && (
-            <div className="border-t border-brand-sand pt-4">
-              <h2 className="text-xs font-semibold text-brand-dark mb-3 uppercase tracking-wide">
-                Detalles del Set
-              </h2>
-              <ul className="space-y-2.5">
-                {activeItems.map((si: { id: string; quantity: number; is_gift?: boolean; product?: { name: string; slug: string } | null; variation?: { label: string } | null }) => (
-                  <li key={si.id} className="flex items-center gap-3 text-sm text-brand-brown">
-                    {si.is_gift ? (
-                      <Gift className="flex-shrink-0 h-4 w-4 text-brand-orange" />
-                    ) : (
-                      <span className="flex-shrink-0 w-5 h-5 rounded-full bg-brand-sand text-brand-dark font-bold text-xs flex items-center justify-center">
-                        {si.quantity}
-                      </span>
-                    )}
-                    <div>
-                      {si.product ? (
-                        <Link
-                          href={`/producto/${si.product.slug}`}
-                          className="font-medium hover:text-brand-dark transition-colors"
-                        >
-                          {si.product.name}
-                          {si.is_gift && (
-                            <span className="ml-1.5 text-xs text-brand-orange font-semibold">· de regalo</span>
-                          )}
-                        </Link>
-                      ) : (
-                        <span className="font-medium">Producto</span>
-                      )}
-                      {si.variation && (
-                        <span className="block text-xs text-brand-brown opacity-60">{si.variation.label}</span>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          <a
-            href={waUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-2 w-full flex items-center justify-center gap-2 py-3.5 px-6
-                       bg-brand-orange hover:bg-brand-orange-hover text-white
-                       font-semibold rounded-xl transition-colors text-sm"
-          >
-            Consultar en WhatsApp <span aria-hidden="true">→</span>
-          </a>
-
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="envios" className="border-brand-sand">
-              <AccordionTrigger className="text-sm font-semibold text-brand-dark hover:text-brand-orange hover:no-underline">
-                Envíos y consultas
-              </AccordionTrigger>
-              <AccordionContent className="text-sm text-brand-brown leading-relaxed">
-                Realizamos envíos a todo el país por Andreani o correo argentino. Una vez que nos
-                escribís por WhatsApp, te confirmamos disponibilidad y coordinamos el envío. Los
-                tiempos de entrega varían según la localidad.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="cuidados" className="border-brand-sand">
-              <AccordionTrigger className="text-sm font-semibold text-brand-dark hover:text-brand-orange hover:no-underline">
-                Cuidados del producto
-              </AccordionTrigger>
-              <AccordionContent className="text-sm text-brand-brown leading-relaxed">
-                Los mates artesanales requieren un proceso de curado antes del primer uso. Te
-                recomendamos llenarlos con yerba húmeda durante 24 horas y secarlos bien. Evitá
-                lavarlos con detergente y guardalos sin la bombilla para que respiren.
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </div>
-      </div>
+      <Accordion type="single" collapsible className="w-full mt-4">
+        <AccordionItem value="envios" className="border-brand-sand">
+          <AccordionTrigger className="text-sm font-semibold text-brand-dark hover:text-brand-orange hover:no-underline">
+            Envíos y consultas
+          </AccordionTrigger>
+          <AccordionContent className="text-sm text-brand-brown leading-relaxed">
+            Realizamos envíos a todo el país por Andreani o correo argentino. Una vez que nos
+            escribís por WhatsApp, te confirmamos disponibilidad y coordinamos el envío. Los
+            tiempos de entrega varían según la localidad.
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="cuidados" className="border-brand-sand">
+          <AccordionTrigger className="text-sm font-semibold text-brand-dark hover:text-brand-orange hover:no-underline">
+            Cuidados del producto
+          </AccordionTrigger>
+          <AccordionContent className="text-sm text-brand-brown leading-relaxed">
+            Los mates artesanales requieren un proceso de curado antes del primer uso. Te
+            recomendamos llenarlos con yerba húmeda durante 24 horas y secarlos bien. Evitá
+            lavarlos con detergente y guardalos sin la bombilla para que respiren.
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
 
       {related.length > 0 && (
         <div className="mt-16 border-t border-brand-sand pt-12">

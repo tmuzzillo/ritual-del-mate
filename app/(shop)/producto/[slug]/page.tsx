@@ -3,12 +3,6 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { FallbackImage } from "@/components/shop/fallback-image";
 import { ProductDetailClient } from "@/components/shop/product-detail-client";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import type { ProductVariation } from "@/types";
 import type { Metadata } from "next";
 
@@ -40,7 +34,7 @@ export default async function ProductoPage({ params }: Props) {
 
   const { data: product } = await supabase
     .from("products")
-    .select("*, category:categories(id, name, slug), variations:product_variations(id, label, images, is_active, sort_order)")
+    .select("*, category:categories(id, name, slug), variations:product_variations(id, label, images, is_active, sort_order, stock, is_default)")
     .eq("slug", slug)
     .eq("is_active", true)
     .single();
@@ -72,18 +66,6 @@ export default async function ProductoPage({ params }: Props) {
     .filter((v) => v.is_active)
     .sort((a, b) => a.sort_order - b.sort_order);
 
-  const formatted =
-    product.price != null
-      ? new Intl.NumberFormat("es-AR", {
-          style: "currency",
-          currency: "ARS",
-          minimumFractionDigits: 0,
-        }).format(product.price)
-      : "Consultar precio";
-
-  const waMessage = encodeURIComponent(`Hola! Me interesa el producto "${product.name}" 🧉`);
-  const waUrl = `https://wa.me/543535104448?text=${waMessage}`;
-
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
       <Link
@@ -93,68 +75,17 @@ export default async function ProductoPage({ params }: Props) {
         ← Volver al catálogo
       </Link>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-16">
-        <ProductDetailClient
-          images={product.images}
-          name={product.name}
-          variations={activeVariations}
-        />
-
-        <div className="flex flex-col gap-4">
-          {product.category && (
-            <Link
-              href={`/catalogo?categoria=${product.category.slug}`}
-              className="text-xs font-semibold text-brand-olive uppercase tracking-wide hover:text-brand-olive transition-colors w-fit"
-            >
-              {product.category.name}
-            </Link>
-          )}
-
-          <h1 className="text-3xl font-extrabold text-brand-dark leading-tight">
-            {product.name}
-          </h1>
-
-          <p className="text-2xl font-bold text-brand-orange">{formatted}</p>
-
-          {product.description && (
-            <p className="text-brand-brown leading-relaxed">{product.description}</p>
-          )}
-
-          <a
-            href={waUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-2 w-full flex items-center justify-center gap-2 py-3.5 px-6
-                       bg-brand-orange hover:bg-brand-orange-hover text-white
-                       font-semibold rounded-xl transition-colors text-sm"
-          >
-            Consultar en WhatsApp <span aria-hidden="true">→</span>
-          </a>
-
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="envios" className="border-brand-sand">
-              <AccordionTrigger className="text-sm font-semibold text-brand-dark hover:text-brand-orange hover:no-underline">
-                Envíos y consultas
-              </AccordionTrigger>
-              <AccordionContent className="text-sm text-brand-brown leading-relaxed">
-                Realizamos envíos a todo el país por Andreani o correo argentino. Una vez que nos
-                escribís por WhatsApp, te confirmamos disponibilidad y coordinamos el envío. Los
-                tiempos de entrega varían según la localidad.
-              </AccordionContent>
-            </AccordionItem>
-            <AccordionItem value="cuidados" className="border-brand-sand">
-              <AccordionTrigger className="text-sm font-semibold text-brand-dark hover:text-brand-orange hover:no-underline">
-                Cuidados del producto
-              </AccordionTrigger>
-              <AccordionContent className="text-sm text-brand-brown leading-relaxed">
-                Los mates artesanales requieren un proceso de curado antes del primer uso. Te
-                recomendamos llenarlos con yerba húmeda durante 24 horas y secarlos bien. Evitá
-                lavarlos con detergente y guardalos sin la bombilla para que respiren.
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </div>
-      </div>
+      <ProductDetailClient
+        productId={product.id}
+        name={product.name}
+        price={product.price}
+        stock={product.stock}
+        images={product.images}
+        variations={activeVariations}
+        categoryName={product.category?.name}
+        categorySlug={product.category?.slug}
+        description={product.description}
+      />
 
       {related.length > 0 && (
         <div className="mt-16 border-t border-brand-sand pt-12">

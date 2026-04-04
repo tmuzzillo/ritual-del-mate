@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { getImageUrl } from "@/lib/utils/image";
 import { BadgePill } from "@/components/shop/badge-pill";
+import { isSetAvailable } from "@/lib/utils/stock";
+import { StockBadge } from "@/components/shop/stock-badge";
 import type { MateSet } from "@/types";
 
 interface SetCardProps {
@@ -17,6 +19,7 @@ export function SetCard({ set }: SetCardProps) {
   }).format(set.price);
 
   const pieceCount = set.set_items?.length ?? 0;
+  const available = set.set_items ? isSetAvailable(set.set_items) : true;
 
   return (
     <Link
@@ -24,6 +27,7 @@ export function SetCard({ set }: SetCardProps) {
       className="group flex flex-col bg-brand-cream rounded-2xl overflow-hidden border border-brand-sand hover:shadow-md transition-shadow"
     >
       <div className="relative aspect-square bg-brand-cream overflow-hidden">
+        {!available && <StockBadge />}
         {set.badge_text && <BadgePill text={set.badge_text} />}
         {coverImage ? (
           <Image
@@ -31,7 +35,7 @@ export function SetCard({ set }: SetCardProps) {
             alt={set.name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-contain"
+            className={`object-contain transition-all${!available ? " grayscale opacity-60" : ""}`}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">

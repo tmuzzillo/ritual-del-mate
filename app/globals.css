@@ -49,8 +49,10 @@
   /* Brand tokens — Ritual del Mate */
   --color-brand-cream:        #EFEADF;
   --color-brand-sand:         #D4C5B2;
-  --color-brand-orange:       #BF7438;
-  --color-brand-orange-hover: #A0602A;
+  --color-brand-orange:           #BF7438;
+  --color-brand-orange-hover:     #A0602A;
+  --color-brand-terracotta:       #C4562A;
+  --color-brand-terracotta-hover: #A83E1F;
   --color-brand-olive:        #7B7648;
   --color-brand-dark:         #38331C;
   --color-brand-brown:        #6F563B;

@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getImageUrl } from "@/lib/utils/image";
+import { isProductAvailable } from "@/lib/utils/stock";
+import { StockBadge } from "@/components/shop/stock-badge";
 import type { Product } from "@/types";
 
 function formatPrice(price: number | null): string {
@@ -20,6 +22,7 @@ export function ProductCard({ product }: ProductCardProps) {
   // Priorizar imagen de variación default, luego fallback a images[] del producto
   const defaultVariation = product.variations?.find((v) => v.is_default && v.is_active);
   const coverImage = defaultVariation?.images?.[0] ?? product.images[0] ?? null;
+  const available = isProductAvailable(product);
 
   return (
     <Link
@@ -27,13 +30,14 @@ export function ProductCard({ product }: ProductCardProps) {
       className="group flex flex-col bg-white rounded-2xl overflow-hidden border border-brand-sand hover:shadow-md transition-shadow"
     >
       <div className="relative aspect-square bg-brand-cream overflow-hidden">
+        {!available && <StockBadge />}
         {coverImage ? (
           <Image
             src={getImageUrl(coverImage, 600)}
             alt={product.name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-contain"
+            className={`object-contain transition-all${!available ? " grayscale opacity-60" : ""}`}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
