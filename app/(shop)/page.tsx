@@ -24,7 +24,7 @@ export default async function HomePage() {
       .limit(6),
     supabase
       .from("products")
-      .select("id, name, slug, price, description, images, is_active, featured, created_at, stock, category_id, variations:product_variations(id, product_id, label, images, is_default, is_active, sort_order, stock, created_at)")
+      .select("id, name, slug, price, description, care_text, images, is_active, featured, created_at, stock, category_id, variations:product_variations(id, product_id, label, images, is_default, is_active, sort_order, stock, created_at)")
       .eq("is_active", true)
       .eq("featured", true)
       .limit(4),
