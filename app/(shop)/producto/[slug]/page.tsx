@@ -6,7 +6,9 @@ import { ProductDetailClient } from "@/components/shop/product-detail-client";
 import type { ProductVariation } from "@/types";
 import type { Metadata } from "next";
 
-async function getWhatsappNumber(): Promise<string> {
+const DEFAULT_SHIPPING = "Realizamos envíos a todo el país por Andreani o correo argentino. Una vez que confirmás tu compra, coordinamos el envío por WhatsApp. Los tiempos de entrega varían según la localidad.";
+
+async function getShopConfigTexts(): Promise<{ whatsappNumber: string; shippingText: string }> {
   try {
     const baseUrl =
       process.env.NEXT_PUBLIC_SITE_URL ??
@@ -14,9 +16,12 @@ async function getWhatsappNumber(): Promise<string> {
     const res = await fetch(`${baseUrl}/api/shop-config`, { cache: "no-store" });
     if (!res.ok) throw new Error();
     const json = await res.json();
-    return json.data?.whatsapp_number || "543535104448";
+    return {
+      whatsappNumber: json.data?.whatsapp_number || "543535104448",
+      shippingText: json.data?.shipping_disclaimer || DEFAULT_SHIPPING,
+    };
   } catch {
-    return "543535104448";
+    return { whatsappNumber: "543535104448", shippingText: DEFAULT_SHIPPING };
   }
 }
 
@@ -55,7 +60,7 @@ export default async function ProductoPage({ params }: Props) {
 
   if (!product) notFound();
 
-  const [{ data: relatedProducts }, { data: relatedSets }, whatsappNumber] = await Promise.all([
+  const [{ data: relatedProducts }, { data: relatedSets }, { whatsappNumber, shippingText }] = await Promise.all([
     supabase
       .from("products")
       .select("id, name, slug, price, images")
@@ -67,7 +72,7 @@ export default async function ProductoPage({ params }: Props) {
       .select("id, name, slug, price, images")
       .eq("is_active", true)
       .limit(8),
-    getWhatsappNumber(),
+    getShopConfigTexts(),
   ]);
 
   const shuffle = <T,>(arr: T[]): T[] => [...arr].sort(() => Math.random() - 0.5);
@@ -100,6 +105,8 @@ export default async function ProductoPage({ params }: Props) {
         categoryName={product.category?.name}
         categorySlug={product.category?.slug}
         description={product.description}
+        careText={product.care_text}
+        shippingText={shippingText}
         whatsappNumber={whatsappNumber}
       />
 

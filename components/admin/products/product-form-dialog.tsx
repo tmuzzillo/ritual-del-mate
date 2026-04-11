@@ -28,6 +28,7 @@ const schema = z.object({
   name: z.string().min(1, "El nombre es requerido").max(255),
   slug: z.string().min(1, "El slug es requerido").max(255).refine(isValidSlug, "Solo minúsculas, números y guiones"),
   description: z.string().optional(),
+  care_text: z.string().optional(),
   price: z.number().positive("Debe ser mayor a 0").nullable(),
   stock: z.number().int().min(0),
   category_id: z.string().nullable(),
@@ -69,7 +70,7 @@ export function ProductFormDialog({
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: "", slug: "", description: "", price: null,
+      name: "", slug: "", description: "", care_text: "", price: null,
       stock: 0, category_id: null, is_active: false, featured: false,
     },
   });
@@ -81,6 +82,7 @@ export function ProductFormDialog({
           name: product.name,
           slug: product.slug,
           description: product.description ?? "",
+          care_text: product.care_text ?? "",
           price: product.price,
           stock: product.stock,
           category_id: product.category_id,
@@ -98,7 +100,7 @@ export function ProductFormDialog({
           .catch(() => setVariationError("Error al cargar variaciones"))
           .finally(() => setVariationsLoading(false));
       } else {
-        form.reset({ name: "", slug: "", description: "", price: null, stock: 0, category_id: null, is_active: false, featured: false });
+        form.reset({ name: "", slug: "", description: "", care_text: "", price: null, stock: 0, category_id: null, is_active: false, featured: false });
         setImages([]);
         setManualSlug(false);
         setVariations([]);
@@ -317,6 +319,25 @@ export function ProductFormDialog({
                   <FormControl>
                     <Textarea placeholder="Describí el producto..." rows={3} {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="care_text"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cuidados del producto <span className="text-gray-400 font-normal">(opcional)</span></FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Si no completás este campo, se usa el texto global de cuidados definido en Configuración."
+                      rows={3}
+                      {...field}
+                    />
+                  </FormControl>
+                  <p className="text-xs text-gray-500 mt-1">Solo completá si este producto tiene instrucciones de cuidado diferentes al global.</p>
                   <FormMessage />
                 </FormItem>
               )}

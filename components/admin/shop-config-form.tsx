@@ -181,6 +181,7 @@ export function ShopConfigForm({ initialValues }: ShopConfigFormProps) {
           </div>
         </div>
 
+
         {/* Botones */}
         <div className="flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={() => form.reset()}>

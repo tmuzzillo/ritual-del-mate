@@ -29,6 +29,8 @@ interface ProductDetailClientProps {
   categoryName?: string;
   categorySlug?: string;
   description?: string | null;
+  careText?: string | null;
+  shippingText: string;
   whatsappNumber: string;
 }
 
@@ -42,6 +44,8 @@ export function ProductDetailClient({
   categoryName,
   categorySlug,
   description,
+  careText,
+  shippingText,
   whatsappNumber,
 }: ProductDetailClientProps) {
   const router = useRouter();
@@ -213,22 +217,20 @@ export function ProductDetailClient({
             <AccordionTrigger className="text-sm font-semibold text-brand-dark hover:text-brand-orange hover:no-underline">
               Envíos y consultas
             </AccordionTrigger>
-            <AccordionContent className="text-sm text-brand-brown leading-relaxed">
-              Realizamos envíos a todo el país por Andreani o correo argentino. Una vez que
-              confirmás tu compra, coordinamos el envío por WhatsApp. Los tiempos de entrega
-              varían según la localidad.
+            <AccordionContent className="text-sm text-brand-brown leading-relaxed whitespace-pre-wrap">
+              {shippingText}
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="cuidados" className="border-brand-sand">
-            <AccordionTrigger className="text-sm font-semibold text-brand-dark hover:text-brand-orange hover:no-underline">
-              Cuidados del producto
-            </AccordionTrigger>
-            <AccordionContent className="text-sm text-brand-brown leading-relaxed">
-              Los mates artesanales requieren un proceso de curado antes del primer uso. Te
-              recomendamos llenarlos con yerba húmeda durante 24 horas y secarlos bien. Evitá
-              lavarlos con detergente y guardalos sin la bombilla para que respiren.
-            </AccordionContent>
-          </AccordionItem>
+          {careText && (
+            <AccordionItem value="cuidados" className="border-brand-sand">
+              <AccordionTrigger className="text-sm font-semibold text-brand-dark hover:text-brand-orange hover:no-underline">
+                Cuidados del producto
+              </AccordionTrigger>
+              <AccordionContent className="text-sm text-brand-brown leading-relaxed whitespace-pre-wrap">
+                {careText}
+              </AccordionContent>
+            </AccordionItem>
+          )}
         </Accordion>
       </div>
     </div>

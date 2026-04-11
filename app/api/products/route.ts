@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
-  const { name, slug, description, price, stock, images, category_id, is_active, featured } =
+  const { name, slug, description, care_text, price, stock, images, category_id, is_active, featured } =
     await req.json();
 
   if (!name || !slug) {
@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
       name,
       slug,
       description: description ?? null,
+      care_text: care_text ?? null,
       price: price ?? null,
       stock: stock ?? 0,
       images: images ?? [],
