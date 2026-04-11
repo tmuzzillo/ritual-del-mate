@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/tomuzzillo/**)",
+      "Read(//opt/homebrew/bin/**)",
+      "Bash(/bin/zsh -l -c 'echo $PATH')",
+      "Bash(/opt/homebrew/bin/node --version)",
+      "Read(//opt/homebrew/Cellar/node/**)",
+      "Bash(git pull:*)",
+      "Bash(PRE_COMMIT_ALLOW_NO_CONFIG=1 git merge feature/mvp2-ventas)"
+    ]
+  }
+}

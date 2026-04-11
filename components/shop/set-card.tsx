@@ -35,7 +35,7 @@ export function SetCard({ set }: SetCardProps) {
             alt={set.name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className={`object-contain transition-all${!available ? " grayscale opacity-60" : ""}`}
+            className={`object-cover transition-all${!available ? " grayscale opacity-60" : ""}`}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
