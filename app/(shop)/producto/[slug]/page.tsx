@@ -6,6 +6,20 @@ import { ProductDetailClient } from "@/components/shop/product-detail-client";
 import type { ProductVariation } from "@/types";
 import type { Metadata } from "next";
 
+async function getWhatsappNumber(): Promise<string> {
+  try {
+    const baseUrl =
+      process.env.NEXT_PUBLIC_SITE_URL ??
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+    const res = await fetch(`${baseUrl}/api/shop-config`, { cache: "no-store" });
+    if (!res.ok) throw new Error();
+    const json = await res.json();
+    return json.data?.whatsapp_number || "543535104448";
+  } catch {
+    return "543535104448";
+  }
+}
+
 interface Props {
   params: Promise<{ slug: string }>;
 }
@@ -41,7 +55,7 @@ export default async function ProductoPage({ params }: Props) {
 
   if (!product) notFound();
 
-  const [{ data: relatedProducts }, { data: relatedSets }] = await Promise.all([
+  const [{ data: relatedProducts }, { data: relatedSets }, whatsappNumber] = await Promise.all([
     supabase
       .from("products")
       .select("id, name, slug, price, images")
@@ -53,6 +67,7 @@ export default async function ProductoPage({ params }: Props) {
       .select("id, name, slug, price, images")
       .eq("is_active", true)
       .limit(8),
+    getWhatsappNumber(),
   ]);
 
   const shuffle = <T,>(arr: T[]): T[] => [...arr].sort(() => Math.random() - 0.5);
@@ -85,6 +100,7 @@ export default async function ProductoPage({ params }: Props) {
         categoryName={product.category?.name}
         categorySlug={product.category?.slug}
         description={product.description}
+        whatsappNumber={whatsappNumber}
       />
 
       {related.length > 0 && (
