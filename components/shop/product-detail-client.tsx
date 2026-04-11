@@ -61,7 +61,7 @@ export function ProductDetailClient({
   const galleryImages = selectedVariation?.images?.length ? selectedVariation.images : images;
 
   const productForStock: Product = {
-    id: productId, name, slug: "", description: null, price, stock,
+    id: productId, name, slug: "", description: null, care_text: null, price, stock,
     images, category_id: null, is_active: true, featured: false,
     created_at: "", variations,
   };
