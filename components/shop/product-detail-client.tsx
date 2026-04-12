@@ -139,7 +139,7 @@ export function ProductDetailClient({
         <p className="text-2xl font-bold text-brand-orange">{formatted}</p>
 
         {description && (
-          <p className="text-brand-brown leading-relaxed">{description}</p>
+          <p className="text-brand-brown leading-relaxed whitespace-pre-wrap">{description}</p>
         )}
 
         {/* Selector de cantidad */}

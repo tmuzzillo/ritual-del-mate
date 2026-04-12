@@ -46,7 +46,7 @@ export default async function ColeccionDetailPage({ params }: Props) {
   const [{ data: cpRows }, { data: csRows }] = await Promise.all([
     supabase
       .from("collection_products")
-      .select("product:products(*, category:categories(id, name, slug))")
+      .select("product:products(*, category:categories(id, name, slug), variations:product_variations(id, images, is_default, is_active, stock))")
       .eq("collection_id", collection.id),
     supabase
       .from("collection_sets")
