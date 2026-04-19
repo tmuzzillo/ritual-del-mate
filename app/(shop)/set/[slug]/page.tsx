@@ -3,12 +3,6 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { FallbackImage } from "@/components/shop/fallback-image";
 import { SetDetailClient } from "@/components/shop/set-detail-client";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import type { Metadata } from "next";
 import type { SetItem } from "@/types";
 
@@ -101,29 +95,6 @@ export default async function SetPage({ params }: Props) {
         activeItems={activeItems}
         formatted={formatted}
       />
-
-      <Accordion type="single" collapsible className="w-full mt-4">
-        <AccordionItem value="envios" className="border-brand-sand">
-          <AccordionTrigger className="text-sm font-semibold text-brand-dark hover:text-brand-orange hover:no-underline">
-            Envíos y consultas
-          </AccordionTrigger>
-          <AccordionContent className="text-sm text-brand-brown leading-relaxed">
-            Realizamos envíos a todo el país por Andreani o correo argentino. Una vez que nos
-            escribís por WhatsApp, te confirmamos disponibilidad y coordinamos el envío. Los
-            tiempos de entrega varían según la localidad.
-          </AccordionContent>
-        </AccordionItem>
-        <AccordionItem value="cuidados" className="border-brand-sand">
-          <AccordionTrigger className="text-sm font-semibold text-brand-dark hover:text-brand-orange hover:no-underline">
-            Cuidados del producto
-          </AccordionTrigger>
-          <AccordionContent className="text-sm text-brand-brown leading-relaxed">
-            Los mates artesanales requieren un proceso de curado antes del primer uso. Te
-            recomendamos llenarlos con yerba húmeda durante 24 horas y secarlos bien. Evitá
-            lavarlos con detergente y guardalos sin la bombilla para que respiren.
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
 
       {related.length > 0 && (
         <div className="mt-16 border-t border-brand-sand pt-12">
