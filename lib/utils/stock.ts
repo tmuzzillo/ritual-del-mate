@@ -37,7 +37,7 @@ export function getProductMaxStock(
 export function isSetAvailable(setItems: SetItem[]): boolean {
   if (setItems.length === 0) return false
   return setItems.every((item) => {
-    if (item.variation_id && item.variation) {
+    if (item.variation) {
       return (item.variation as ProductVariation).stock >= item.quantity
     }
     if (item.product) {

@@ -38,7 +38,7 @@ export default async function SetPage({ params }: Props) {
       *,
       category:categories(id, name, slug),
       set_items(
-        id, quantity, is_gift,
+        id, quantity, variation_id, is_gift,
         product:products(id, name, slug, price, images, is_active, stock),
         variation:product_variations(id, label, images, stock)
       )
