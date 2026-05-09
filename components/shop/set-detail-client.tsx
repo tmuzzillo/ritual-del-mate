@@ -200,16 +200,6 @@ export function SetDetailClient({ set, activeItems, formatted }: SetDetailClient
               varían según la localidad.
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="cuidados" className="border-brand-sand">
-            <AccordionTrigger className="text-sm font-semibold text-brand-dark hover:text-brand-orange hover:no-underline">
-              Cuidados del producto
-            </AccordionTrigger>
-            <AccordionContent className="text-sm text-brand-brown leading-relaxed">
-              Los mates artesanales requieren un proceso de curado antes del primer uso. Te
-              recomendamos llenarlos con yerba húmeda durante 24 horas y secarlos bien. Evitá
-              lavarlos con detergente y guardalos sin la bombilla para que respiren.
-            </AccordionContent>
-          </AccordionItem>
         </Accordion>
       </div>
     </div>

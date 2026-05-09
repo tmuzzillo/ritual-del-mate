@@ -12,7 +12,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
     .select(`
       *,
       category:categories(id, name, slug),
-      set_items(id, product_id, quantity, variation_id, is_gift, product:products(id, name, slug, price, images, is_active), variation:product_variations(id, label, images))
+      set_items(id, product_id, quantity, variation_id, is_gift, product:products(id, name, slug, price, images, is_active, stock), variation:product_variations(id, label, images, stock))
     `)
     .eq("id", id)
     .single();
@@ -80,7 +80,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
     .select(`
       *,
       category:categories(id, name, slug),
-      set_items(id, product_id, quantity, variation_id, is_gift, product:products(id, name, slug, price, images, is_active), variation:product_variations(id, label, images))
+      set_items(id, product_id, quantity, variation_id, is_gift, product:products(id, name, slug, price, images, is_active, stock), variation:product_variations(id, label, images, stock))
     `)
     .eq("id", id)
     .single();

@@ -58,7 +58,7 @@ export default async function SetPage({ params }: Props) {
       .limit(8),
     supabase
       .from("products")
-      .select("id, name, slug, price, images")
+      .select("id, name, slug, price, images, variations:product_variations(images, is_default, is_active)")
       .eq("is_active", true)
       .limit(8),
   ]);
@@ -107,7 +107,10 @@ export default async function SetPage({ params }: Props) {
                 currency: "ARS",
                 minimumFractionDigits: 0,
               }).format(item.price ?? 0);
-              const firstImage = Array.isArray(item.images) ? item.images[0] : null;
+              const defaultVariation = item.type === "product"
+                ? (item as { variations?: { images: string[]; is_default: boolean; is_active: boolean }[] }).variations?.find((v) => v.is_default && v.is_active)
+                : null;
+              const firstImage = defaultVariation?.images?.[0] ?? (Array.isArray(item.images) ? item.images[0] : null);
 
               return (
                 <Link key={`${item.type}-${item.id}`} href={href} className="group">

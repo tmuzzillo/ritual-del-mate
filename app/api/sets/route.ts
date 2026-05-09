@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     .select(`
       *,
       category:categories(id, name, slug),
-      set_items(id, product_id, quantity, variation_id, is_gift, product:products(id, name, slug, price, images, is_active), variation:product_variations(id, label, images))
+      set_items(id, product_id, quantity, variation_id, is_gift, product:products(id, name, slug, price, images, is_active, stock), variation:product_variations(id, label, images, stock))
     `)
     .order("created_at", { ascending: false });
 
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
     .select(`
       *,
       category:categories(id, name, slug),
-      set_items(id, product_id, quantity, variation_id, is_gift, product:products(id, name, slug, price, images, is_active), variation:product_variations(id, label, images))
+      set_items(id, product_id, quantity, variation_id, is_gift, product:products(id, name, slug, price, images, is_active, stock), variation:product_variations(id, label, images, stock))
     `)
     .eq("id", set.id)
     .single();

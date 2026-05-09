@@ -107,12 +107,10 @@ export function SetFormDialog({
     }
   }, [nameValue, manualSlug, isEditing, form]);
 
-  // Calculate availability: check if all items have sufficient stock
-  function isSetAvailable(): boolean {
-    if (items.length === 0) return true;
-    return items.every((item) => {
-      const itemStock = item.variation ? item.variation.stock : item.product.stock;
-      return itemStock > 0;
+  function getOutOfStockItems() {
+    return items.filter((item) => {
+      const stock = item.variation ? item.variation.stock : item.product.stock;
+      return stock <= 0;
     });
   }
 
@@ -238,14 +236,13 @@ export function SetFormDialog({
                   <FormLabel>Precio</FormLabel>
                   <FormControl>
                     <Input
-                      type="number"
-                      min={0}
-                      step="0.01"
-                      placeholder="0.00"
+                      type="text"
+                      inputMode="numeric"
+                      placeholder="0"
                       value={field.value ?? ""}
                       onChange={(e) => {
-                        const v = e.target.value;
-                        field.onChange(v === "" ? undefined : parseFloat(v));
+                        const v = e.target.value.replace(/[^0-9]/g, "");
+                        field.onChange(v === "" ? undefined : Number(v));
                       }}
                     />
                   </FormControl>
@@ -287,25 +284,32 @@ export function SetFormDialog({
             <FormItem>
               <FormLabel>Productos del set</FormLabel>
               <ProductSelector selected={items} onChange={setItems} />
-              {isEditing && items.length > 0 && (
-                <div className={`mt-2 flex items-center gap-2 p-3 rounded-lg ${
-                  isSetAvailable()
-                    ? 'bg-green-50 border border-green-200'
-                    : 'bg-red-50 border border-red-200'
-                }`}>
-                  {isSetAvailable() ? (
-                    <>
+              {items.length > 0 && (() => {
+                const outOfStock = getOutOfStockItems();
+                if (outOfStock.length === 0) {
+                  return (
+                    <div className="mt-2 flex items-center gap-2 p-3 rounded-lg bg-green-50 border border-green-200">
                       <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />
-                      <span className="text-sm text-green-700 font-medium">Disponible</span>
-                    </>
-                  ) : (
-                    <>
-                      <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0" />
-                      <span className="text-sm text-red-700 font-medium">Sin stock en uno o más productos</span>
-                    </>
-                  )}
-                </div>
-              )}
+                      <span className="text-sm text-green-700 font-medium">Todos los productos tienen stock</span>
+                    </div>
+                  );
+                }
+                return (
+                  <div className="mt-2 flex gap-2 p-3 rounded-lg bg-red-50 border border-red-200">
+                    <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <span className="text-sm text-red-700 font-medium">Sin stock:</span>
+                      <ul className="mt-1 space-y-0.5">
+                        {outOfStock.map((item) => (
+                          <li key={`${item.product_id}-${item.variation_id ?? "base"}`} className="text-sm text-red-600">
+                            {item.product.name}{item.variation ? ` · ${item.variation.label}` : ""}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                );
+              })()}
             </FormItem>
 
             <FormField

@@ -50,7 +50,7 @@ export default async function ColeccionDetailPage({ params }: Props) {
       .eq("collection_id", collection.id),
     supabase
       .from("collection_sets")
-      .select("set:sets(*, category:categories(id, name, slug), set_items(id, quantity, product:products(id, name, slug, price, images, is_active)))")
+      .select("set:sets(*, category:categories(id, name, slug), set_items(id, quantity, variation_id, is_gift, product:products(id, name, slug, price, images, is_active, stock), variation:product_variations(id, label, images, stock)))")
       .eq("collection_id", collection.id),
   ]);
 

@@ -8,7 +8,7 @@ export default async function SetsPage() {
 
   const { data } = await supabase
     .from("sets")
-    .select("*, category:categories(id, name, slug), set_items(id, quantity, product:products(id, name, slug, price, images, is_active))")
+    .select("*, category:categories(id, name, slug), set_items(id, quantity, variation_id, is_gift, product:products(id, name, slug, price, images, is_active, stock), variation:product_variations(id, label, images, stock))")
     .eq("is_active", true)
     .order("featured", { ascending: false })
     .order("created_at", { ascending: false });
