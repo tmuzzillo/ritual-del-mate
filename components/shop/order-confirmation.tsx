@@ -47,7 +47,7 @@ export function OrderConfirmation({ orderNumber, total, config }: OrderConfirmat
       : "";
 
   const waMessage = encodeURIComponent(
-    `Hola! Acabo de realizar el pedido #${orderNumber} por ${formattedTotal}.${detailLines}\n\nTe envío el comprobante de la transferencia.`
+    `Hola! Acabo de realizar el pedido #${orderNumber} por ${formattedTotal}.${detailLines}\n\nQuiero coordinar la forma de pago y el envío.`
   );
   const waUrl = `https://wa.me/${config.whatsapp_number}?text=${waMessage}`;
 
@@ -71,26 +71,15 @@ export function OrderConfirmation({ orderNumber, total, config }: OrderConfirmat
         <p className="text-sm opacity-80 mt-1">Total: {formattedTotal}</p>
       </div>
 
-      {/* Datos bancarios */}
-      <div className="bg-brand-cream rounded-2xl border border-brand-sand p-5 space-y-3">
+      {/* Próximos pasos */}
+      <div className="bg-brand-cream rounded-2xl border border-brand-sand p-5 space-y-2">
         <h2 className="text-sm font-bold text-brand-dark uppercase tracking-wide">
-          Datos para la transferencia
+          Próximos pasos
         </h2>
-        <div className="space-y-2">
-          <DataRow label="Banco" value={config.bank_name} />
-          <DataRow label="Titular" value={config.bank_owner} />
-          <DataRow label="CBU" value={config.bank_cbu} />
-          <DataRow label="Alias" value={config.bank_alias} />
-          <DataRow label="Monto" value={formattedTotal} highlight />
-        </div>
+        <p className="text-sm text-brand-brown leading-relaxed">
+          Coordiná la forma de pago y el envío directamente por WhatsApp. Te respondemos a la brevedad.
+        </p>
       </div>
-
-      {/* Disclaimer de envío */}
-      {config.shipping_disclaimer && (
-        <div className="bg-white rounded-2xl border border-brand-sand p-4">
-          <p className="text-sm text-brand-brown leading-relaxed">{config.shipping_disclaimer}</p>
-        </div>
-      )}
 
       {/* CTA WhatsApp */}
       <a
@@ -101,37 +90,13 @@ export function OrderConfirmation({ orderNumber, total, config }: OrderConfirmat
                    bg-brand-terracotta hover:bg-brand-terracotta-hover text-white
                    font-semibold rounded-xl transition-colors text-sm"
       >
-        Enviar comprobante por WhatsApp <span aria-hidden="true">→</span>
+        Finalizar pedido por WhatsApp <span aria-hidden="true">→</span>
       </a>
 
       <p className="text-center text-xs text-brand-warm-gray">
-        Una vez confirmado el pago, coordinaremos el envío a tu domicilio.
+        Coordinamos el pago y el envío por WhatsApp una vez recibido tu pedido.
       </p>
     </div>
   );
 }
 
-function DataRow({
-  label,
-  value,
-  highlight = false,
-}: {
-  label: string;
-  value: string;
-  highlight?: boolean;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-2">
-      <span className="text-xs font-semibold text-brand-warm-gray uppercase tracking-wide flex-shrink-0">
-        {label}
-      </span>
-      <span
-        className={`text-sm font-semibold text-right ${
-          highlight ? "text-brand-terracotta text-base font-bold" : "text-brand-dark"
-        }`}
-      >
-        {value}
-      </span>
-    </div>
-  );
-}

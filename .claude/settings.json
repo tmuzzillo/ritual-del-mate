@@ -9,7 +9,12 @@
       "Bash(git pull:*)",
       "Bash(PRE_COMMIT_ALLOW_NO_CONFIG=1 git merge feature/mvp2-ventas)",
       "Bash(/Users/tomuzzillo/.git-ai/bin/git-ai --help)",
-      "mcp__claude_ai_Google_Drive__read_file_content"
+      "mcp__claude_ai_Google_Drive__read_file_content",
+      "Bash(git clone *)",
+      "Bash(ssh -T git@github.com)"
+    ],
+    "additionalDirectories": [
+      "/Users/tomuzzillo/Documents/repos-mio/admin-import"
     ]
   }
 }
