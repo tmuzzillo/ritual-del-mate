@@ -55,6 +55,7 @@ export function ProductFormDialog({
 }: ProductFormDialogProps) {
   const isEditing = !!product;
   const [manualSlug, setManualSlug] = useState(false);
+  const [priceDisplay, setPriceDisplay] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -89,6 +90,7 @@ export function ProductFormDialog({
           is_active: product.is_active,
           featured: product.featured ?? false,
         });
+        setPriceDisplay(product.price != null ? String(product.price) : "");
         setImages(product.images);
         setManualSlug(true);
         // Load variations
@@ -101,6 +103,7 @@ export function ProductFormDialog({
           .finally(() => setVariationsLoading(false));
       } else {
         form.reset({ name: "", slug: "", description: "", care_text: "", price: null, stock: 0, category_id: null, is_active: false, featured: false });
+        setPriceDisplay("");
         setImages([]);
         setManualSlug(false);
         setVariations([]);
@@ -352,14 +355,14 @@ export function ProductFormDialog({
                     <FormLabel>Precio <span className="text-gray-400 font-normal">(opcional)</span></FormLabel>
                     <FormControl>
                       <Input
-                        type="number"
-                        min={0}
-                        step="0.01"
-                        placeholder="0.00"
-                        value={field.value ?? ""}
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="0"
+                        value={priceDisplay}
                         onChange={(e) => {
-                          const v = e.target.value;
-                          field.onChange(v === "" ? null : parseFloat(v));
+                          const raw = e.target.value.replace(/[^0-9]/g, "");
+                          setPriceDisplay(raw);
+                          field.onChange(raw === "" ? null : Number(raw));
                         }}
                       />
                     </FormControl>

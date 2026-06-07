@@ -54,6 +54,7 @@ export function SetFormDialog({
 }: SetFormDialogProps) {
   const isEditing = !!set;
   const [manualSlug, setManualSlug] = useState(false);
+  const [priceDisplay, setPriceDisplay] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const [items, setItems] = useState<SelectedItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -79,6 +80,7 @@ export function SetFormDialog({
           is_active: set.is_active,
           featured: set.featured ?? false,
         });
+        setPriceDisplay(set.price != null ? String(set.price) : "");
         setImages(set.images);
         setItems(
           (set.set_items ?? []).map((si) => ({
@@ -93,6 +95,7 @@ export function SetFormDialog({
         setManualSlug(true);
       } else {
         form.reset({ name: "", slug: "", description: "", badge_text: null, price: undefined, category_id: null, is_active: false, featured: false });
+        setPriceDisplay("");
         setImages([]);
         setItems([]);
         setManualSlug(false);
@@ -239,10 +242,11 @@ export function SetFormDialog({
                       type="text"
                       inputMode="numeric"
                       placeholder="0"
-                      value={field.value ?? ""}
+                      value={priceDisplay}
                       onChange={(e) => {
-                        const v = e.target.value.replace(/[^0-9]/g, "");
-                        field.onChange(v === "" ? undefined : Number(v));
+                        const raw = e.target.value.replace(/[^0-9]/g, "");
+                        setPriceDisplay(raw);
+                        field.onChange(raw === "" ? undefined : Number(raw));
                       }}
                     />
                   </FormControl>
